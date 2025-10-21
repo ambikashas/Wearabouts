@@ -25,6 +25,7 @@ A lightweight web app that helps college students pre-plan outfits for events li
 ### Installation
 
 ```bash
-git clone https://github.com/your-username/outfit-planner.git
-cd outfit-planner
-npm install
+git clone https://github.com/ambikashas/Wearabouts.git
+cd Wearabouts/WearaboutsExpo
+npx expo start
+```
