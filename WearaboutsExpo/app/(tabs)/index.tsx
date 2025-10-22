@@ -33,7 +33,7 @@ export default function HomeScreen() {
               web: 'F12',
             })}
           </ThemedText>{' '}
-          to open developer tools.
+          to open dev tools.
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
@@ -63,6 +63,15 @@ export default function HomeScreen() {
         <ThemedText>
           {`Tap the Explore tab to learn more about what's included in this starter app.`}
         </ThemedText>
+      </ThemedView>
+      <ThemedView style={styles.stepContainer}>
+        <ThemedText type="subtitle">Generate Outfit</ThemedText>
+        <Link href="/(tabs)/generate" style={{ backgroundColor: 'blue' }}> // TODO: fix this style
+          <Link.Trigger>
+            <ThemedText>Generate Outfit</ThemedText>
+          </Link.Trigger>
+          <Link.Preview />
+        </Link>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
