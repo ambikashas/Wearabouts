@@ -29,3 +29,4 @@ git clone https://github.com/ambikashas/Wearabouts.git
 cd Wearabouts/WearaboutsExpo
 npx expo start
 ```
+npm
