@@ -5,7 +5,7 @@
     "jsx": "react-native",          // ensure JSX in .tsx files is handled
     "baseUrl": "./",                // base path for imports
     "paths": {
-      "@/*": ["WearaboutsExpo/*"]   // match your project structure
+      "@/*": ["./*"]
     }
   },
   "include": [

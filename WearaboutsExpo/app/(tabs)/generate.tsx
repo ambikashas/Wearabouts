@@ -1,4 +1,6 @@
-import { StyleSheet } from 'react-native';
+import { router } from 'expo-router';
+import { View, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
 
 import { ExternalLink } from '@/components/external-link';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
@@ -7,64 +9,97 @@ import { ThemedView } from '@/components/themed-view';
 import { Collapsible } from '@/components/ui/collapsible';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
+import RadioButton from '@/components/radio-button';
+
+import { useThemeColor } from '@/hooks/use-theme-color';
 
 export default function GenerateScreen() {
+  const [selectedOption, setSelectedOption] = useState("");
+  const [otherText, setOtherText] = useState("");
+
+  const options = ['Casual', 'Work', 'Party', 'Formal', 'Other'];
+
+  const tintColor = useThemeColor({}, 'tint');
+  const backgroundColor = useThemeColor({}, 'background');
+  const textColor = useThemeColor({}, 'text');
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={200}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText
-          type="title"
-          style={{
-            fontFamily: Fonts.rounded,
-          }}>
-          Generate Outfit
-        </ThemedText>
-      </ThemedView>
-      <ThemedText>Generate a personalized outfit recommendation based on your preferences.</ThemedText>
-      <Collapsible title="Outfit Generation">
-        <ThemedText>
-          This screen will help you generate outfit recommendations based on your wardrobe, 
-          weather, occasion, and personal style preferences.
-        </ThemedText>
-        <ThemedText>
-          Features coming soon:
-        </ThemedText>
-        <ThemedText>• Weather-based recommendations</ThemedText>
-        <ThemedText>• Occasion-specific styling</ThemedText>
-        <ThemedText>• Personal style analysis</ThemedText>
-        <ThemedText>• Color coordination</ThemedText>
-      </Collapsible>
-      <Collapsible title="Your Wardrobe">
-        <ThemedText>
-          Connect your wardrobe items to get more accurate recommendations. 
-          Add items from your closet to improve the AI's suggestions.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more about outfit generation</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Style Preferences">
-        <ThemedText>
-          Set your style preferences to get personalized recommendations that match your taste.
-        </ThemedText>
-        <ThemedText>
-          You can adjust preferences for:
-        </ThemedText>
-        <ThemedText>• Color schemes</ThemedText>
-        <ThemedText>• Style categories (casual, formal, etc.)</ThemedText>
-        <ThemedText>• Comfort levels</ThemedText>
-        <ThemedText>• Seasonal preferences</ThemedText>
-      </Collapsible>
-    </ParallaxScrollView>
+    <ThemedView style={{ flex: 1 }}>
+      <ParallaxScrollView
+        headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
+        headerImage={
+          <IconSymbol
+            size={200}
+            color="#808080"
+            name="chevron.left.forwardslash.chevron.right"
+            style={styles.headerImage}
+          />
+        }>
+        <ThemedView style={styles.titleContainer}>
+          <ThemedText
+            type="title"
+            style={{
+              fontFamily: Fonts.rounded,
+              textAlign: 'center',
+            }}>
+            Generate Outfit
+          </ThemedText>
+        </ThemedView>
+        <View>
+          <ThemedText type='subtitle'>Event Type</ThemedText>
+          {options.map((option) => (
+            <RadioButton
+              key={option}
+              label={option}
+              selected={selectedOption === option}
+              onPress={() => setSelectedOption(option)}
+            />
+          ))}
+          {selectedOption === 'Other' && (
+            <TextInput
+              style={{
+                borderColor: '#ccc',
+                borderWidth: 1,
+                borderRadius: 5,
+                padding: 8,
+                marginTop: 8,
+                backgroundColor: '#f2f2f2',
+              }}
+              onChangeText={setOtherText}
+              value={otherText}
+              placeholder="Please specify"
+              placeholderTextColor="#666"
+            />
+          )}
+        </View>
+      </ParallaxScrollView>
+
+      <View
+          style={[
+            styles.bottomContainer,
+            { backgroundColor: backgroundColor },
+          ]}>
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: backgroundColor, borderWidth: 1, borderColor: tintColor }]}
+            onPress={() => router.back()}>
+            <ThemedText type="defaultSemiBold" style={{ color: textColor }}>
+              Back
+            </ThemedText>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: backgroundColor, borderWidth: 1, borderColor: tintColor }]}
+            onPress={() => {
+              const event = selectedOption === 'Other' ? otherText : selectedOption;
+              if (!event) return;
+              router.push({ pathname: '/(tabs)/generated-outfit', params: { eventType: event } });
+            }}>
+            <ThemedText type="defaultSemiBold" style={{ color: textColor }}>
+              Generate
+            </ThemedText>
+          </TouchableOpacity>
+        </View>
+    </ThemedView>
   );
 }
 
@@ -78,5 +113,23 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
     gap: 8,
+  },
+  bottomContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderColor: '#999',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  button: {
+    flex: 1,
+    marginHorizontal: 6,
+    paddingVertical: 12,
+    borderRadius: 6,
+    alignItems: 'center',
   },
 });
