@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { StyleSheet, Button, Image, View } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
+import { useState } from 'react';
+import { StyleSheet, View, Button, Image, TouchableOpacity, Text } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import * as ImagePicker from 'expo-image-picker';
 
 export default function AddClothesScreen() {
   const [imageUri, setImageUri] = useState<string | null>(null);
@@ -22,14 +22,18 @@ export default function AddClothesScreen() {
   return (
     <ThemedView style={styles.container}>
       <ThemedText type="title" style={styles.title}>
-        Upload Clothes
+        Add To Your Closet
       </ThemedText>
 
-      <Button title="Choose Image from Device" onPress={pickImage} />
+      <TouchableOpacity style={styles.uploadArea} onPress={pickImage}>
+        {imageUri ? (
+          <Image source={{ uri: imageUri }} style={styles.imagePreview} resizeMode="contain" />
+        ) : (
+          <Text style={styles.uploadText}>Tap to upload an image</Text>
+        )}
+      </TouchableOpacity>
 
-      {imageUri && (
-        <Image source={{ uri: imageUri }} style={styles.imagePreview} resizeMode="contain" />
-      )}
+      <View style={styles.bottomTabSpace} />
     </ThemedView>
   );
 }
@@ -37,20 +41,36 @@ export default function AddClothesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
+    backgroundColor: '#FFE4E1', // Light pink background
+    padding: 16,
   },
   title: {
     fontSize: 24,
-    marginBottom: 20,
+    fontWeight: 'bold',
+    color: '#FF69B4', // Pink tone for the title
+    textAlign: 'center',
+    marginVertical: 16,
+  },
+  uploadArea: {
+    flex: 1,
+    borderWidth: 2,
+    borderColor: '#FFB6C1', // Soft pink border
+    borderRadius: 16,
+    backgroundColor: '#FFF0F5', // Light pink background for the upload area
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 16,
+  },
+  uploadText: {
+    fontSize: 16,
+    color: '#FF69B4', // Pink tone for the text
   },
   imagePreview: {
-    marginTop: 20,
-    width: 250,
-    height: 250,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    width: '100%',
+    height: '100%',
+    borderRadius: 16,
+  },
+  bottomTabSpace: {
+    height: 60, // Reserve space for the bottom tab bar
   },
 });
