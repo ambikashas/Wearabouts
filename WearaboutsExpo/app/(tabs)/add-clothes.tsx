@@ -53,6 +53,21 @@ export default function AddClothesScreen() {
           </View>
         ))}
       </View>
+
+      {/* Upload Button */}
+      <TouchableOpacity
+        style={[
+          styles.uploadButton,
+          imageUris.length === 0 && styles.disabledButton, // Disable styling
+        ]}
+        disabled={imageUris.length === 0} // Disable button if no images are selected
+        onPress={() => {
+          // Placeholder for upload functionality
+          console.log('Upload button pressed');
+        }}
+      >
+        <Text style={styles.uploadButtonText}>Upload</Text>
+      </TouchableOpacity>
     </ThemedView>
   );
 }
@@ -115,6 +130,25 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     color: '#FFF',
     fontSize: 14,
+    fontWeight: 'bold',
+  },
+  uploadButton: {
+    position: 'absolute',
+    bottom: 20,
+    left: '50%',
+    transform: [{ translateX: -75 }], // Center the button horizontally
+    width: 150,
+    backgroundColor: '#FF69B4',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  disabledButton: {
+    backgroundColor: '#FFC0CB', // Lighter pink for disabled state
+  },
+  uploadButtonText: {
+    fontSize: 16,
+    color: '#FFF',
     fontWeight: 'bold',
   },
 });
