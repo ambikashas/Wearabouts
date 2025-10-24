@@ -1,11 +1,19 @@
 import { useState } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity, Text } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Image,
+  TouchableOpacity,
+  Text,
+  ActivityIndicator,
+} from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import * as ImagePicker from 'expo-image-picker';
 
 export default function AddClothesScreen() {
   const [imageUris, setImageUris] = useState<string[]>([]); // Manage multiple image URIs
+  const [isLoading, setIsLoading] = useState(false); // Manage loading state
 
   const pickImages = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -24,6 +32,25 @@ export default function AddClothesScreen() {
   const deleteImage = (uri: string) => {
     setImageUris((prevUris) => prevUris.filter((item) => item !== uri)); // Remove the selected image
   };
+
+  const handleUpload = () => {
+    setIsLoading(true);
+    // Simulate a backend upload process
+    setTimeout(() => {
+      setIsLoading(false);
+      setImageUris([]); // Clear images after successful "upload"
+      // Here you can add further logic, like showing a success message
+    }, 2000); // Simulate a 2-second delay
+  };
+
+  if (isLoading) {
+    return (
+      <ThemedView style={[styles.container, styles.loadingContainer]}>
+        <ActivityIndicator size="large" color="#FF69B4" />
+        <ThemedText style={styles.loadingText}>Uploading...</ThemedText>
+      </ThemedView>
+    );
+  }
 
   return (
     <ThemedView style={styles.container}>
@@ -58,13 +85,10 @@ export default function AddClothesScreen() {
       <TouchableOpacity
         style={[
           styles.uploadButton,
-          imageUris.length === 0 && styles.disabledButton, // Disable styling
+          (imageUris.length === 0 || isLoading) && styles.disabledButton, // Disable styling
         ]}
-        disabled={imageUris.length === 0} // Disable button if no images are selected
-        onPress={() => {
-          // Placeholder for upload functionality
-          console.log('Upload button pressed');
-        }}
+        disabled={imageUris.length === 0 || isLoading} // Disable button if no images or loading
+        onPress={handleUpload}
       >
         <Text style={styles.uploadButtonText}>Upload</Text>
       </TouchableOpacity>
@@ -77,6 +101,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFE4E1',
     padding: 16,
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#FF69B4',
   },
   headerContainer: {
     marginTop: 50,
