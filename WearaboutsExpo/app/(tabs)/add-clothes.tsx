@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -6,14 +6,18 @@ import {
   TouchableOpacity,
   Text,
   ActivityIndicator,
+  Modal,
 } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import * as ImagePicker from 'expo-image-picker';
+import ConfettiCannon from 'react-native-confetti-cannon';
 
 export default function AddClothesScreen() {
   const [imageUris, setImageUris] = useState<string[]>([]); // Manage multiple image URIs
   const [isLoading, setIsLoading] = useState(false); // Manage loading state
+  const [showSuccess, setShowSuccess] = useState(false); // Manage success modal visibility
+  const confettiRef = useRef(null); // Reference for confetti cannon
 
   const pickImages = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -39,7 +43,17 @@ export default function AddClothesScreen() {
     setTimeout(() => {
       setIsLoading(false);
       setImageUris([]); // Clear images after successful "upload"
-      // Here you can add further logic, like showing a success message
+      setShowSuccess(true); // Show success modal
+      // Start confetti animation
+      setTimeout(() => {
+        if (confettiRef.current) {
+          (confettiRef.current as any).start(); // Start confetti animation
+        }
+      }, 100);
+      // Hide modal after 3 seconds
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 3000);
     }, 2000); // Simulate a 2-second delay
   };
 
@@ -92,6 +106,25 @@ export default function AddClothesScreen() {
       >
         <Text style={styles.uploadButtonText}>Upload</Text>
       </TouchableOpacity>
+
+      {/* Success Modal */}
+      <Modal transparent={true} visible={showSuccess} animationType="fade">
+        <View style={styles.successOverlay}>
+          <ThemedText type="title" style={styles.successText}>
+            Added to your closet!
+          </ThemedText>
+          {showSuccess && (
+            <ConfettiCannon
+              ref={confettiRef}
+              count={200}
+              origin={{ x: -10, y: 0 }}
+              autoStart={false}
+              fadeOut={true}
+              colors={['#FF69B4', '#FFB6C1', '#FFF0F5', '#DB7093']}
+            />
+          )}
+        </View>
+      </Modal>
     </ThemedView>
   );
 }
@@ -183,5 +216,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FFF',
     fontWeight: 'bold',
+  },
+  successOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  successText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    textAlign: 'center',
   },
 });
