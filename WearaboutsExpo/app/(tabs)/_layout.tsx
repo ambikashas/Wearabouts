@@ -27,7 +27,7 @@ export default function TabLayout() {
         name="add-clothes"
         options={{
           title: 'Add Clothes',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="add.circle.fill" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="plus.circle.fill" color={color} />,
         }}
       />
       <Tabs.Screen
