@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     left: '50%',
-    transform: [{ translateX: -75 }], // Center the button horizontally
+    transform: [{ translateX: -50 }], // Center the button horizontally
     width: 150,
     backgroundColor: '#FF69B4',
     paddingVertical: 12,
