@@ -18,8 +18,14 @@ const categorizedOutfits: { [category: string]: string[][] } = {
       'https://via.placeholder.com/100x100?text=Jeans',
       'https://via.placeholder.com/100x100?text=Sneakers',
     ],
+    [
+      'https://via.placeholder.com/100x100?text=Blazer',
+      'https://via.placeholder.com/100x100?text=Shirt',
+      'https://via.placeholder.com/100x100?text=Heels',
+    ]
   ],
   Casual: [],
+  Other: [],
 };
 
 const SavedOutfitsScreen = () => {
@@ -54,21 +60,26 @@ const SavedOutfitsScreen = () => {
     <ThemedView style={styles.container}>
       <View style={styles.headerSpacer} />
       <ThemedText type="title" style={styles.title}>Saved Outfits</ThemedText>
-      {Object.keys(outfitsByCategory).map((category) => (
-        <View key={category} style={styles.categorySection}>
-          <ThemedText type="subtitle" style={styles.categoryTitle}>{category}</ThemedText>
-          {outfitsByCategory[category].length === 0 ? (
-            <ThemedText type="default">No outfits in this category.</ThemedText>
-          ) : (
-            <FlatList
-              data={outfitsByCategory[category]}
-              renderItem={renderOutfit(category)}
-              keyExtractor={(_, idx) => idx.toString()}
-              contentContainerStyle={styles.listContent}
-            />
-          )}
-        </View>
-      ))}
+      <FlatList
+        data={Object.keys(outfitsByCategory)}
+        renderItem={({ item: category }) => (
+          <View style={styles.categorySection}>
+            <ThemedText type="subtitle" style={styles.categoryTitle}>{category}</ThemedText>
+            {outfitsByCategory[category].length === 0 ? (
+              <ThemedText type="default">No outfits in this category.</ThemedText>
+            ) : (
+              <FlatList
+                data={outfitsByCategory[category]}
+                renderItem={renderOutfit(category)}
+                keyExtractor={(_, idx) => idx.toString()}
+                contentContainerStyle={styles.listContent}
+              />
+            )}
+          </View>
+        )}
+        keyExtractor={(category) => category}
+        contentContainerStyle={styles.flatListContent}
+      />
     </ThemedView>
   );
 };
@@ -135,5 +146,8 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     color: '#FFF',
     fontWeight: 'bold',
+  },
+  flatListContent: {
+    paddingBottom: 32,
   },
 });
