@@ -39,6 +39,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="saved-outfits"
+        options={{
+          title: 'Saved Outfits',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="clock.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="generate"
         options={{
           href: null, // This hides the tab from the tab bar
