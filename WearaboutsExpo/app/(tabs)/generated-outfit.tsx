@@ -1,10 +1,10 @@
 import React from 'react';
-import { Modal, View, StyleSheet, TextInput } from 'react-native';
+import { ActivityIndicator, Modal, View, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { router, useLocalSearchParams } from 'expo-router';
-import { TouchableOpacity } from 'react-native';
+import ConfettiCannon from 'react-native-confetti-cannon';
 
 export default function EventSummaryScreen() {
   const { eventType } = useLocalSearchParams(); 
@@ -13,49 +13,65 @@ export default function EventSummaryScreen() {
   const textColor = useThemeColor({}, 'text');
 
   const [outfitName, setOutfitName] = React.useState('');
-  const [modalVisible, setModalVisible] = React.useState(false);
+  const [isSaving, setIsSaving] = React.useState(false);
+  const [showSuccess, setShowSuccess] = React.useState(false);
+  const confettiRef = React.useRef(null);
 
   const handleSave = () => {
-    setModalVisible(true);
+    if (!outfitName.trim()) return;
 
-    setTimeout(() => setModalVisible(false), 2000);
+    setIsSaving(true);
 
-    console.log('Outfit saved:', outfitName, 'Event type:', eventType);
+    // Simulate a save delay
+    setTimeout(() => {
+      setIsSaving(false);
+      setShowSuccess(true);
+
+      setTimeout(() => {
+        if (confettiRef.current) {
+          (confettiRef.current as any).start();
+        }
+      }, 100);
+
+      // Hide success after 3 seconds
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 3000);
+    }, 1500);
   };
+
+  if (isSaving) {
+    return (
+      <ThemedView style={[styles.container, styles.loadingContainer]}>
+        <ActivityIndicator size="large" color="#FF69B4" />
+        <ThemedText style={styles.loadingText}>Saving outfit...</ThemedText>
+      </ThemedView>
+    );
+  }
 
 
   return (
-    <ThemedView style={{ flex: 1 }}>
-      <View style={styles.content}>
-        <ThemedText type="title" style={{ marginBottom: 16 }}>
+    <ThemedView style={styles.container}>
+      <View style={styles.headerContainer}>
+        <ThemedText type="title" style={styles.title}>
           Event Summary
         </ThemedText>
 
-        <ThemedText type="subtitle">
+        <ThemedText type="subtitle" style={styles.label}>
           Selected Event Type:
         </ThemedText>
-        <ThemedText type="defaultSemiBold" style={{ marginBottom: 20 }}>
+        <ThemedText type="defaultSemiBold" style={styles.value}>
           {eventType || '—'}
         </ThemedText>
 
-        <ThemedText type="subtitle" style={{ marginBottom: 8 }}>
+        <ThemedText type="subtitle" style={styles.label}>
           Generated Outfit Preview:
         </ThemedText>
         <View
-          style={[
-            styles.box,
-            { borderColor: tintColor, backgroundColor: backgroundColor === '#000' ? '#1a1a1a' : '#f2f2f2' },
-          ]}
+          style={styles.previewBox}
         />
         <TextInput
-            style={{
-            borderColor: '#ccc',
-            borderWidth: 1,
-            borderRadius: 5,
-            padding: 8,
-            marginTop: 8,
-            backgroundColor: '#f2f2f2',
-            }}
+            style={styles.input}
             onChangeText={setOutfitName}
             value={outfitName}
             placeholder="Name your outfit"
@@ -63,9 +79,9 @@ export default function EventSummaryScreen() {
         />
       </View>
 
-      <View style={[styles.bottomContainer, { backgroundColor }]}>
+      <View style={[styles.bottomButtons]}>
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: backgroundColor, borderWidth: 1, borderColor: tintColor }]}
+          style={[styles.button, styles.backButton]}
           onPress={() => router.push('/(tabs)/generate')}>
           <ThemedText type="defaultSemiBold" style={{ color: textColor }}>
             Back
@@ -73,7 +89,7 @@ export default function EventSummaryScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: backgroundColor, borderWidth: 1, borderColor: tintColor }]}
+          style={[styles.button, styles.saveButton]}
           onPress={handleSave}>
           <ThemedText type="defaultSemiBold" style={{ color: textColor }}>
             Save
@@ -81,16 +97,21 @@ export default function EventSummaryScreen() {
         </TouchableOpacity>
       </View>
 
-      <Modal
-        visible={modalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { backgroundColor }]}>
-            <ThemedText type="title">Outfit Saved</ThemedText>
-          </View>
+      <Modal transparent={true} visible={showSuccess} animationType="fade">
+        <View style={styles.successOverlay}>
+          <ThemedText type="title" style={styles.successText}>
+            Outfit Saved!
+          </ThemedText>
+          {showSuccess && (
+            <ConfettiCannon
+              ref={confettiRef}
+              count={200}
+              origin={{ x: -10, y: 0 }}
+              autoStart={false}
+              fadeOut={true}
+              colors={['#FF69B4', '#FFB6C1', '#FFF0F5', '#DB7093']}
+            />
+          )}
         </View>
       </Modal>
     </ThemedView>
@@ -98,43 +119,100 @@ export default function EventSummaryScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: {
+  container: {
     flex: 1,
+    backgroundColor: '#FFE4E1',
     padding: 20,
   },
-  box: {
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#FF69B4',
+  },
+  headerContainer: {
+    marginTop: 50,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#FF69B4',
+  },
+  infoSection: {
+    marginTop: 30,
+  },
+  label: {
+    fontSize: 16,
+    color: '#FF69B4',
+    marginBottom: 4,
+  },
+  value: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 20,
+  },
+  previewBox: {
     height: 150,
     borderWidth: 2,
-    borderRadius: 10,
+    borderColor: '#FFB6C1',
+    borderRadius: 12,
+    backgroundColor: '#FFF0F5',
+    marginBottom: 20,
   },
-  bottomContainer: {
+  input: {
+    borderWidth: 1.5,
+    borderColor: '#FFB6C1',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    backgroundColor: '#FFF0F5',
+    color: '#333',
+  },
+  bottomButtons: {
+    position: 'absolute',
+    bottom: 30,
+    left: 20,
+    right: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 16,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderColor: '#999',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
   },
   button: {
     flex: 1,
-    marginHorizontal: 6,
     paddingVertical: 12,
-    borderRadius: 6,
+    borderRadius: 10,
     alignItems: 'center',
+    marginHorizontal: 8,
   },
-  modalOverlay: {
+  backButton: {
+    backgroundColor: '#FFC0CB',
+  },
+  saveButton: {
+    backgroundColor: '#FF69B4',
+  },
+  disabledButton: {
+    backgroundColor: '#FFC0CB',
+    opacity: 0.6,
+  },
+  buttonText: {
+    fontSize: 16,
+    color: '#FFF',
+    fontWeight: 'bold',
+  },
+  successOverlay: {
     flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#00000088', // semi-transparent overlay
   },
-  modalContent: {
-    padding: 30,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
+  successText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFF',
+    textAlign: 'center',
   },
 });

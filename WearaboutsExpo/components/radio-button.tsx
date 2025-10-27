@@ -1,5 +1,4 @@
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import React, { useState } from 'react';
 import { ThemedText } from './themed-text';
 
 
@@ -39,6 +38,7 @@ const radioStyles = StyleSheet.create({
     },
     label: {
         fontSize: 16,
+        color: '#333',
     },
 });
 
