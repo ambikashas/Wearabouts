@@ -2,4 +2,7 @@
   "dependencies": {
     "expo": "^54.0.19"
   }
+  "scripts": {
+  "test": "jest"
+}
 }
