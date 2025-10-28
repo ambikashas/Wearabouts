@@ -1,107 +1,216 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
+import { View, Platform, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient'; // background gradient
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import { Pressable } from 'react-native';
 import { Link } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 
 export default function HomeScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">hi!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open dev tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <LinearGradient
+      colors={['#FFC9D8','#FFFFFF']}
+      start={{ x: 0.5, y: 0 }}
+      end={{ x: 0.5, y: 1 }}
+      style={styles.gradientBackground}
+    >
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
+    <ParallaxScrollView
+      headerImage={<View />} // placeholder header
+      headerBackgroundColor={{ light: 'transparent', dark: 'transparent' }}
+    >
+
+    {/* Welcome card with background image */}
+    <View style={styles.card}>
+      <Image
+        source={require('@/assets/images/dashboard-bg.jpg')}
+        style={styles.dashboardCard}
+        contentFit="cover"
+      />
+
+      {/* Overlayed text on welcome card */}
+      <View style={styles.overlay}>
+        <ThemedText type="title" style={styles.welcome}>
+          Welcome stylist!
         </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Generate Outfit</ThemedText>
-        <Link href="/(tabs)/generate" style={{ backgroundColor: 'blue' }}> // TODO: fix this style
-          <Link.Trigger>
-            <ThemedText>Generate Outfit</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-        </Link>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
+
+        <ThemedText style={styles.subtitle}>
+          passion{'\n'}personalization{'\n'}productivity
         </ThemedText>
-      </ThemedView>
+
+        <View style={styles.brandRow}>
+          <Ionicons name="shirt-outline" size={28} color="#131C16" style={styles.brandIcon} />
+          <ThemedText style={styles.brand}>Wearabouts</ThemedText>
+        </View>
+
+        {/* Overlay pink dress image */}
+        <Image
+          source={require('@/assets/images/pink-dress.png')}
+          style={styles.overlayImage2}
+          contentFit="contain"
+        />
+
+        {/* Overlay blue dress image */}
+        <Image
+          source={require('@/assets/images/blue-dress.png')}
+          style={styles.overlayImage}
+          contentFit="contain"
+        />
+      </View>
+    </View>
+
+    {/* Buttons */}
+    <View style={styles.buttonsContainer}>
+      {/* My Closet */}
+      <Link href="/closet" asChild>
+        <Pressable
+          style={styles.button}
+          onPress={() => {
+            Haptics.selectionAsync(); // this triggers the light “click” vibration
+          }}
+        >
+          <ThemedText style={styles.buttonText}>♡ My Closet</ThemedText>
+        </Pressable>
+      </Link>
+        
+      {/* Create Outfit */}
+      <Link href="/(tabs)/generate" asChild>
+        <Pressable
+          style={styles.button}
+          onPress={() => {
+            Haptics.selectionAsync();
+          }}
+        >
+          <ThemedText style={styles.buttonText}>♡ Create outfit</ThemedText>
+        </Pressable>
+      </Link>
+    </View>
+
     </ParallaxScrollView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  gradientBackground: {
+    flex: 1,
+  },
+  transparentScroll: {
+    backgroundColor: 'transparent',
+  },
+  card: {
+    width: '100%',
+    borderRadius: 20,
+    overflow: 'hidden',
+    alignSelf: 'center',
+    marginTop: 40,
+    marginBottom: 40,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  dashboardCard: {
+    width: '100%',
+    height: 460,
+    borderRadius: 20,
+    opacity: 0.7,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    padding: 20,
+    justifyContent: 'space-between',
+  },
+  welcome: {
+    fontSize: 46,
+    fontWeight: '600',
+    color: '#35403A',
+    fontFamily: 'Georgia',
+    lineHeight: 50,
+    marginTop: 10,
+  },
+  subtitle: {
+    fontSize: 24,
+    color: '#262E26',
+    textAlign: 'right',
+    lineHeight: 24,
+    marginTop: 180,
+  },
+  brandRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    justifyContent: 'flex-end',
+    gap: 8, // spacing between icon and text
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  brandIcon: {
+    marginRight: 2,
+    marginBottom: 4,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
+  brand: {
+    fontSize: 38,
+    color: '#131C16',
+    fontFamily: 'SF Pro Rounded',
+    textAlign: 'right',
+    lineHeight: 36,
+    fontWeight: '500',
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 2, height: 2 },
+    shadowRadius: 3,
+  },
+  overlayImage: {
     position: 'absolute',
+    top: '50%',
+    left: '10%',
+    width: 230,
+    height: 230,
+    zIndex: 10,
+    opacity: 1.0,
+    transform: [
+      { translateX: -75 },
+      { translateY: -75 },
+      { rotate: '-11deg' }, // rotate 11 degrees to the left
+    ],
+  },
+  overlayImage2: {
+    position: 'absolute',
+    top: '55%',
+    left: '42%',
+    width: 170,
+    height: 170,
+    zIndex: 10,
+    opacity: 0.75,
+    transform: [
+      { translateX: -75 },
+      { translateY: -75 },
+      { rotate: '8deg' }, // rotate 8 degrees to the right
+    ],
+  },
+  buttonsContainer: {
+    alignItems: 'center',
+    gap: 20,
+  },
+  button: {
+    width: '100%',
+    backgroundColor: '#FBD6DB',
+    paddingVertical: 16,
+    borderRadius: 16,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 3,
+  },
+  buttonText: {
+    fontSize: 18,
+    color: '#333',
+    fontWeight: '500',
   },
 });
