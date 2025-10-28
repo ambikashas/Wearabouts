@@ -44,6 +44,12 @@ export default function TabLayout() {
           href: null, // This hides the tab from the tab bar
         }}
       />
+      <Tabs.Screen
+        name="generated-outfit"
+        options={{
+          href: null, // This hides the tab from the tab bar
+        }}
+      />
     </Tabs>
   );
 }
