@@ -2,8 +2,8 @@
 
 ## 1. High-Level Description
 
-**Wearabouts** is a mobile application that helps users digitize their wardrobe, create and save outfits, and receive personalized outfit suggestions for different events or weather conditions.  
-The app uses AI-based clothing recognition to tag and organize uploaded clothing photos. Users can mix and match items to create outfits and plan what to wear for upcoming events.
+**Wearabouts** is a mobile application that helps users digitize their wardrobe, create and save outfits, and receive personalized outfit suggestions for different events.  
+The app uses AI-based clothing recognition to tag and organize uploaded clothing photos. Users can geneerate outfits and plan what to wear for their upcoming events.
 
 Wearabouts is designed for anyone who wants an easier way to plan outfits, organize their closet, and reduce decision fatigue when getting dressed.
 
@@ -60,15 +60,16 @@ Once the app is running on your device:
 
 ---
 
-**Register or Log In**  
-- New users can create an account with an email and password.  
-- Returning users can log in using their existing credentials.
+**Move from "Home"**  
+- From the dashboard, navigate to "My Closet" or "Create Outfit".
+- Or, use bottom of screen bar navigation for reaching additional pages.
 
 ---
 
-**Upload Clothing Items**  
-- Add photos of your clothing items using your device’s camera or gallery.  
-- The app uses AI to identify clothing type, color, and pattern.
+**"Add Clothes"**  
+- Add photos of your clothing items using your device’s photo gallery. 
+- Select one or many items to add to your closet.
+- Added clothes will be added and appear in your closet.
 
 ---
 
@@ -79,21 +80,17 @@ Once the app is running on your device:
 ---
 
 **Create Outfits**  
-- Combine items from your wardrobe to make and save outfits.
+- Select the type of event you want to build your outfit for, i.e., casual, work, party, formal, and other (write in).
+- AI model will automatically generate an outfit preview.
+- Review outfit, name, and save outfit. 
 
 ---
 
-**AI Outfit Suggestions**  
-- Receive automatic outfit recommendations based on event type or weather.  
-  *(Feature may be incomplete or in progress.)*
+**Saved Outfits**
+- View and delete saved outfits.
 
 ---
 
-**Event Planning and Notifications**  
-- Plan outfits for specific occasions.  
-  *(Feature may be incomplete or in progress.)*
-
----
 
 ## 4. How to Report a Bug
 
