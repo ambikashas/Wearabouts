@@ -6,7 +6,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
-import RadioButton from '@/components/radio-button';
+import RadioButton from '../../components/radio-button';
 
 export default function GenerateScreen() {
   const [selectedOption, setSelectedOption] = useState("");
@@ -80,6 +80,7 @@ export default function GenerateScreen() {
         <TouchableOpacity
           style={[styles.button, styles.backButton]}
           onPress={() => router.back()}
+          testID='back-button'
         >
           <ThemedText style={styles.buttonText}>Back</ThemedText>
         </TouchableOpacity>
@@ -93,6 +94,7 @@ export default function GenerateScreen() {
           ]}
           disabled={!selectedOption && !otherText}
           onPress={handleGenerate}
+          testID='generate-button'
         >
           <ThemedText style={styles.buttonText}>Generate</ThemedText>
         </TouchableOpacity>
