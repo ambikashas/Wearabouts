@@ -1,10 +1,10 @@
-import { ScrollView, View, Text, TouchableOpacity } from "react-native";
-import { allOutfitTypes, OutfitItem, OutfitTypes } from "@/types/outfit";
-import { mockOutfits } from "@/mock-data/items";
-import React from "react";
 import ListHorizontalScrollDisplay from "@/components/ImageListHorizontalScrollDisplay";
-import { ChevronRightIcon } from "react-native-heroicons/outline";
+import { mockOutfits } from "@/mock-data/items";
+import { allOutfitItemTypes } from "@/types/outfit";
 import { useRouter } from "expo-router";
+import React from "react";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ChevronRightIcon } from "react-native-heroicons/outline";
 
 export default function ItemsCloset() {
   const router = useRouter();
@@ -17,7 +17,7 @@ export default function ItemsCloset() {
         showsVerticalScrollIndicator={false}
         className="pt-2 bg-white"
       >
-        {allOutfitTypes.map((type) => {
+        {allOutfitItemTypes.map((type) => {
           const itemsOfType = mockOutfits.filter((item) => item.type === type);
           if (!itemsOfType.length) return null;
 

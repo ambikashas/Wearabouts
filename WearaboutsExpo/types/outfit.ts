@@ -6,9 +6,9 @@ export type OutfitItem = {
   image: string;
 };
 
-export const allOutfitTypes = ["top", "bottom", "full"] as const;
+export const allOutfitItemTypes = ["top", "bottom", "full"] as const;
 
-export type OutfitTypes = (typeof allOutfitTypes)[number];
+export type OutfitTypes = (typeof allOutfitItemTypes)[number];
 
 export type HasImage = {
   id: string;
