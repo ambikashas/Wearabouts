@@ -16,12 +16,12 @@ jest.mock('../components/radio-button', () => {
   );
 });
 
-import GenerateScreen from '../app/(tabs)/generate';
+import GenerateScreen from '../app/(tabs)/(home)/outfit-generation/generate';
 
 describe('GenerateScreen', () => {
   it('renders the main title', () => {
     render(<GenerateScreen />);
-    expect(screen.getByText(/Generate Outfit/i)).toBeTruthy();
+    expect(screen.getByText(/Select Event Type/i)).toBeTruthy();
   });
 
   it('renders all event type options', () => {
