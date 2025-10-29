@@ -1,4 +1,4 @@
-import RadioButton from "@/components/radio-button";
+import RadioButton from "../../../../components/radio-button";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -55,6 +55,7 @@ export default function GenerateScreen() {
             label={option}
             selected={selectedOption === option}
             onPress={() => setSelectedOption(option)}
+            testID={`radio-${option}`}
           />
         ))}
 
@@ -74,6 +75,7 @@ export default function GenerateScreen() {
         <TouchableOpacity
           className="flex-1 py-3 rounded-lg items-center bg-[#FFC0CB] mx-2"
           onPress={() => router.back()}
+          testID="back-button"
         >
           <Text className="text-base font-bold text-white">Back</Text>
         </TouchableOpacity>
@@ -86,6 +88,7 @@ export default function GenerateScreen() {
           }`}
           disabled={!selectedOption && !otherText}
           onPress={handleGenerate}
+          testID="generate-button"
         >
           <Text className="text-base font-bold text-white">Generate</Text>
         </TouchableOpacity>
