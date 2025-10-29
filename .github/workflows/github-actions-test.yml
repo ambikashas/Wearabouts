@@ -1,0 +1,27 @@
+name: CI - Run Tests
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        working-directory: WearaboutsExpo
+        run: npm ci
+
+      - name: Run Jest tests
+        working-directory: WearaboutsExpo
+        run: npm test
