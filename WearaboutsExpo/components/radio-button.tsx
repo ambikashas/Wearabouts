@@ -1,45 +1,26 @@
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { ThemedText } from './themed-text';
+import { Text, TouchableOpacity, View } from "react-native";
 
-
-const RadioButton = ({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) => (
-    <TouchableOpacity style={radioStyles.container} onPress={onPress}>
-        <View style={[radioStyles.outerCircle, selected && radioStyles.outerCircleSelected]}>
-            {selected && <View style={radioStyles.innerCircle} />}
-        </View>
-        <ThemedText style={radioStyles.label}>{label}</ThemedText>
-    </TouchableOpacity>
+const RadioButton = ({
+  label,
+  selected,
+  onPress,
+  testID
+}: {
+  label: string;
+  selected: boolean;
+  onPress: () => void;
+  testID?: string;
+}) => (
+  <TouchableOpacity className="flex-row items-center my-2" onPress={onPress} testID="{testID}">
+    <View
+      className={`h-6 w-6 rounded-full border-2 mr-2 flex items-center justify-center ${
+        selected ? "border-[#0a7ea4]" : "border-gray-500"
+      }`}
+    >
+      {selected && <View className="h-3 w-3 rounded-full bg-[#0a7ea4]" />}
+    </View>
+    <Text className="text-base text-[#333]">{label}</Text>
+  </TouchableOpacity>
 );
-
-const radioStyles = StyleSheet.create({
-    container: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginVertical: 8,
-    },
-    outerCircle: {
-        height: 24,
-        width: 24,
-        borderRadius: 12,
-        borderWidth: 2,
-        borderColor: '#777',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: 8,
-    },
-    outerCircleSelected: {
-        borderColor: '#0a7ea4',
-    },
-    innerCircle: {
-        height: 12,
-        width: 12,
-        borderRadius: 6,
-        backgroundColor: '#0a7ea4',
-    },
-    label: {
-        fontSize: 16,
-        color: '#333',
-    },
-});
 
 export default RadioButton;

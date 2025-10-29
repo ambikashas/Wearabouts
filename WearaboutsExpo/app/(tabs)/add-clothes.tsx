@@ -1,232 +1,126 @@
-import { useState, useRef } from 'react';
+import * as ImagePicker from "expo-image-picker";
+import { useRef, useState } from "react";
 import {
-  StyleSheet,
-  View,
-  Image,
-  TouchableOpacity,
-  Text,
   ActivityIndicator,
+  Image,
   Modal,
-} from 'react-native';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import * as ImagePicker from 'expo-image-picker';
-import ConfettiCannon from 'react-native-confetti-cannon';
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import ConfettiCannon from "react-native-confetti-cannon";
 
 export default function AddClothesScreen() {
-  const [imageUris, setImageUris] = useState<string[]>([]); // Manage multiple image URIs
-  const [isLoading, setIsLoading] = useState(false); // Manage loading state
-  const [showSuccess, setShowSuccess] = useState(false); // Manage success modal visibility
-  const confettiRef = useRef(null); // Reference for confetti cannon
+  const [imageUris, setImageUris] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const confettiRef = useRef(null);
 
   const pickImages = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: "images",
       allowsEditing: false,
-      allowsMultipleSelection: true, // Enable multiple photo selection
+      allowsMultipleSelection: true,
       quality: 1,
     });
 
     if (!result.canceled) {
-      const selectedUris = result.assets.map((asset) => asset.uri); // Extract URIs from selected assets
-      setImageUris((prevUris) => [...prevUris, ...selectedUris]); // Append new URIs to the existing list
+      const selectedUris = result.assets.map((asset) => asset.uri);
+      setImageUris((prevUris) => [...prevUris, ...selectedUris]);
     }
   };
 
   const deleteImage = (uri: string) => {
-    setImageUris((prevUris) => prevUris.filter((item) => item !== uri)); // Remove the selected image
+    setImageUris((prevUris) => prevUris.filter((item) => item !== uri));
   };
 
   const handleUpload = () => {
     setIsLoading(true);
-    // Simulate a backend upload process
     setTimeout(() => {
       setIsLoading(false);
-      setImageUris([]); // Clear images after successful "upload"
-      setShowSuccess(true); // Show success modal
-      // Start confetti animation
+      setImageUris([]);
+      setShowSuccess(true);
       setTimeout(() => {
         if (confettiRef.current) {
-          (confettiRef.current as any).start(); // Start confetti animation
+          (confettiRef.current as any).start();
         }
       }, 100);
-      // Hide modal after 3 seconds
       setTimeout(() => {
         setShowSuccess(false);
       }, 3000);
-    }, 2000); // Simulate a 2-second delay
+    }, 2000);
   };
 
   if (isLoading) {
     return (
-      <ThemedView style={[styles.container, styles.loadingContainer]}>
+      <View className="flex-1 bg-[#FFE4E1] justify-center items-center p-4">
         <ActivityIndicator size="large" color="#FF69B4" />
-        <ThemedText style={styles.loadingText}>Uploading...</ThemedText>
-      </ThemedView>
+        <Text className="mt-2 text-base text-brandPink">Uploading...</Text>
+      </View>
     );
   }
 
   return (
-    <ThemedView style={styles.container}>
-      {/* Header */}
-      <View style={styles.headerContainer}>
-        <ThemedText type="title" style={styles.title}>
-          Add To Your Closet
-        </ThemedText>
-      </View>
-
-      {/* Upload Button */}
-      <TouchableOpacity style={styles.uploadArea} onPress={pickImages}>
-        <ThemedText style={styles.uploadText}>Tap to upload images</ThemedText>
-      </TouchableOpacity>
-
-      {/* Display Selected Images */}
-      <View style={styles.imageGrid}>
-        {imageUris.map((uri, index) => (
-          <View key={index} style={styles.imageWrapper}>
-            <Image source={{ uri }} style={styles.imagePreview} />
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={() => deleteImage(uri)}
-            >
-              <Text style={styles.deleteButtonText}>X</Text>
-            </TouchableOpacity>
-          </View>
-        ))}
-      </View>
-
-      {/* Upload Button */}
+    <View className="flex-1 p-4">
+      {/* Upload Area */}
       <TouchableOpacity
-        style={[
-          styles.uploadButton,
-          (imageUris.length === 0 || isLoading) && styles.disabledButton, // Disable styling
-        ]}
-        disabled={imageUris.length === 0 || isLoading} // Disable button if no images or loading
-        onPress={handleUpload}
+        className="w-full mb-4 rounded-2xl bg-brandPink justify-center items-center p-5"
+        onPress={pickImages}
       >
-        <Text style={styles.uploadButtonText}>Upload</Text>
+        <Text className="text-base text-white">Tap to upload images</Text>
       </TouchableOpacity>
+
+      {/* Selected Images */}
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View className="flex flex-row flex-wrap">
+          {imageUris.map((uri, index) => (
+            <View key={index} className="relative p-1 w-1/4">
+              <Image source={{ uri }} className="aspect-square rounded-lg" />
+              <TouchableOpacity
+                className="absolute top-1 right-1 bg-[#fd6cb5] w-6 h-6 rounded-full justify-center items-center"
+                onPress={() => deleteImage(uri)}
+              >
+                <Text className="text-white font-bold text-sm">X</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+
+      {/* Sticky Upload Button */}
+      <View className="items-center pt-4">
+        <TouchableOpacity
+          className={`w-[150px] py-3 rounded-lg items-center ${
+            imageUris.length === 0 || isLoading
+              ? "bg-brandPink"
+              : "bg-[#FF69B4]"
+          }`}
+          disabled={imageUris.length === 0 || isLoading}
+          onPress={handleUpload}
+        >
+          <Text className="text-white font-bold text-base">Upload</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Success Modal */}
       <Modal transparent={true} visible={showSuccess} animationType="fade">
-        <View style={styles.successOverlay}>
-          <ThemedText type="title" style={styles.successText}>
+        <View className="flex-1 bg-black/40 justify-center items-center">
+          <Text className="text-2xl font-bold text-white text-center">
             Added to your closet!
-          </ThemedText>
+          </Text>
           {showSuccess && (
             <ConfettiCannon
               ref={confettiRef}
               count={200}
               origin={{ x: -10, y: 0 }}
               autoStart={false}
-              fadeOut={true}
-              colors={['#FF69B4', '#FFB6C1', '#FFF0F5', '#DB7093']}
+              fadeOut
+              colors={["#FF69B4", "#FFB6C1", "#FFF0F5", "#DB7093"]}
             />
           )}
         </View>
       </Modal>
-    </ThemedView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFE4E1',
-    padding: 16,
-  },
-  loadingContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 16,
-    color: '#FF69B4',
-  },
-  headerContainer: {
-    marginTop: 50,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FF69B4',
-  },
-  uploadArea: {
-    marginTop: 20,
-    borderWidth: 2,
-    borderColor: '#FFB6C1',
-    borderRadius: 16,
-    backgroundColor: '#FFF0F5',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  uploadText: {
-    fontSize: 16,
-    color: '#FF69B4',
-  },
-  imageGrid: {
-    marginTop: 20,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  imageWrapper: {
-    position: 'relative',
-    marginBottom: 10,
-  },
-  imagePreview: {
-    width: 100,
-    height: 100,
-    borderRadius: 8,
-  },
-  deleteButton: {
-    position: 'absolute',
-    top: 5,
-    right: 5,
-    backgroundColor: '#fd6cb5ff',
-    borderRadius: 12,
-    width: 24,
-    height: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  deleteButtonText: {
-    color: '#FFF',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  uploadButton: {
-    position: 'absolute',
-    bottom: 20,
-    left: '50%',
-    transform: [{ translateX: -50 }], // Center the button horizontally
-    width: 150,
-    backgroundColor: '#FF69B4',
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  disabledButton: {
-    backgroundColor: '#FFC0CB', // Lighter pink for disabled state
-  },
-  uploadButtonText: {
-    fontSize: 16,
-    color: '#FFF',
-    fontWeight: 'bold',
-  },
-  successOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  successText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    textAlign: 'center',
-  },
-});

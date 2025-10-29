@@ -1,9 +1,9 @@
 import ListVerticalScrollDisplay from "@/components/ImageListVerticalScrollDisplay";
 import { mockOutfits } from "@/mock-data/items";
-import { allOutfitTypes } from "@/types/outfit";
+import { allOutfitItemTypes } from "@/types/outfit";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { ChevronDownIcon } from "react-native-heroicons/outline";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -20,7 +20,7 @@ export default function ItemsPerType() {
 
   const titleCase = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
-  const dropdownData = allOutfitTypes.map((typeItem) => ({
+  const dropdownData = allOutfitItemTypes.map((typeItem) => ({
     label: titleCase(typeItem) + "s",
     value: typeItem,
   }));
