@@ -35,7 +35,7 @@ A lightweight web app that helps college students pre-plan outfits for events li
 git clone https://github.com/ambikashas/Wearabouts.git
 cd Wearabouts/WearaboutsExpo
 ```
-Install dependencies:
+## Install dependencies:
 
 npm install
 
