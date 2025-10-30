@@ -37,7 +37,9 @@ cd Wearabouts/WearaboutsExpo
 ```
 ## Install dependencies:
 
+```bash
 npm install
+```
 
 ## 🏃‍♀️ Run the App
 
