@@ -54,7 +54,7 @@ export default function AddClothesScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-[#FFE4E1] justify-center items-center p-4">
+      <View className="flex-1 justify-center items-center p-4">
         <ActivityIndicator size="large" color="#FF69B4" />
         <Text className="mt-2 text-base text-brandPink">Uploading...</Text>
       </View>
