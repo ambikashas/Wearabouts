@@ -4,8 +4,6 @@ UW CSE 403 Au25 - Wearabouts project
 
 A lightweight web app that helps college students pre-plan outfits for events like interviews, parties, and presentations—reducing stress, saving time, and boosting confidence.
 
-[Living Document](https://docs.google.com/document/d/1KpbRdOSH_yJGZnzOoH199a6Eis-hvjhoAU9NHdUZcsI/edit?usp=sharing)
-
 [Code Guidelines](coding-guidelines.md)
 
 [Developer Documentation](developer-documentation.md)
