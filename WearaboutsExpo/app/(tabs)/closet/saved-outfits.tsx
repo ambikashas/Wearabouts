@@ -66,7 +66,7 @@ const SavedOutfitsScreen = () => {
     };
 
   return (
-    <View className="flex-1 p-4 bg-[#F8F8FF]">
+    <View className="flex-1 p-4">
       <View className="h-10" />
       <Text className="mb-4 text-center text-xl font-normal">
         Saved Outfits
