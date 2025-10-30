@@ -39,11 +39,11 @@ Install dependencies:
 
 npm install
 
-🏃‍♀️ Run the App
+##🏃‍♀️ Run the App
 
-Make sure your phone and computer are connected to the same Wi-Fi network.
+-Make sure your phone and computer are connected to the same Wi-Fi network.
 
-Then start the Expo development server:
+##Then start the Expo development server:
 
 npx expo start
 
@@ -57,7 +57,7 @@ or
 
 npx expo start --lan
 
-🎉 Open the App
+##🎉 Open the App
 
 After running the command, a QR code or URL will appear in your terminal or browser window.
 
@@ -67,37 +67,29 @@ Scan the QR code or enter the URL.
 
 The Wearabouts app will load on your device.
 
-🎉 Yay — you did it! The app is now running!
+##🎉 Yay — you did it! The app is now running!
 
-🧑‍💻 Common Tools Used
+##🧑‍💻 Common Tools Used
 
-The Wearabouts app is built using the following Expo ecosystem tools and libraries:
+- Expo SDK 54+
 
-Expo SDK 54+
+- React Native for mobile UI
 
-React Native for mobile UI
+- Expo Router for navigation
 
-Expo Router for navigation
+- Expo Image Picker for wardrobe uploads
 
-Expo Image Picker for wardrobe uploads
+- React Context / AsyncStorage for local state and caching
 
-React Context / AsyncStorage for local state and caching
+- ESLint + Prettier for consistent code formatting
 
-ESLint + Prettier for consistent code formatting
-
-🧩 Troubleshooting
+##🧩 Troubleshooting
 
 If something isn’t working as expected:
 
 Check for environment issues:
 
 npx expo doctor
-
-
-Update dependencies if versions are out of sync:
-
-npx expo install
-
 
 
 
