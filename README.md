@@ -23,14 +23,24 @@ A lightweight web app that helps college students pre-plan outfits for events li
 ### Prerequisites
 
 - Node.js (v18+)
-- npm or yarn
+- npm (or yarn but we dont recommend)
 - Git
+- Expo CLI (to run the app locally)
+  *  Or our prefernce which is VS Code or another IDE 
+- Expo Go App (Can be downloaded for free from the app store you use)
 
 ### Installation
 
 ```bash
 git clone https://github.com/ambikashas/Wearabouts.git
 cd Wearabouts/WearaboutsExpo
-npx expo start
 ```
-npm
+Then run npm install to run all the dependencies
+First make sure your phone and computer are connected to the same wifi
+Then run **npx** expo start 
+If you are on a public wifi or have firewalls and it does not work, try adding the flag --tunnnel or --lan after the previous statement
+After running npx expo start a url or qr code should open up in your terminal and you should be able to scan it on your Expo Go (Phone App) to open the app !!!! 
+yay you did it!
+
+
+
