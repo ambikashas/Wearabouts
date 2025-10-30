@@ -39,57 +39,51 @@ Install dependencies:
 
 npm install
 
-##🏃‍♀️ Run the App
+## 🏃‍♀️ Run the App
 
--Make sure your phone and computer are connected to the same Wi-Fi network.
+Make sure your phone and computer are connected to the same Wi-Fi network.
 
-##Then start the Expo development server:
+## Start the Expo Development Server
 
+```bash
 npx expo start
+```
 
+If you’re on a public Wi-Fi or running into firewall/network issues, try one of these flags:
 
-If you’re on a public Wi-Fi or running into firewall/network issues, try using one of these flags:
-
+```bash
 npx expo start --tunnel
-
+```
 
 or
 
+```bash
 npx expo start --lan
+```
 
-##🎉 Open the App
+## 🎉 Open the App
 
 After running the command, a QR code or URL will appear in your terminal or browser window.
 
-Open the Expo Go app on your phone.
+1. Open the Expo Go app on your phone.
+2. Scan the QR code or enter the URL.
+3. The Wearabouts app will load on your device.
 
-Scan the QR code or enter the URL.
+🎉 Yay — you did it! The app is now running!
 
-The Wearabouts app will load on your device.
-
-##🎉 Yay — you did it! The app is now running!
-
-##🧑‍💻 Common Tools Used
+## 🧑‍💻 Common Tools Used
 
 - Expo SDK 54+
-
 - React Native for mobile UI
-
 - Expo Router for navigation
-
 - Expo Image Picker for wardrobe uploads
-
 - React Context / AsyncStorage for local state and caching
-
 - ESLint + Prettier for consistent code formatting
 
-##🧩 Troubleshooting
+## 🧩 Troubleshooting
 
-If something isn’t working as expected:
+If something isn’t working as expected, check for environment issues:
 
-Check for environment issues:
-
+```bash
 npx expo doctor
-
-
-
+```
