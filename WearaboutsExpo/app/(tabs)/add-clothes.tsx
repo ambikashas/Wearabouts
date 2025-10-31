@@ -66,7 +66,7 @@ export default function AddClothesScreen() {
       {/* Upload Area */}
       <TouchableOpacity
         activeOpacity={0.7}
-        className="w-full mb-4 rounded-2xl bg-brandPink justify-center items-center p-10"
+        className="w-full mb-4 rounded-2xl bg-brandPink justify-center items-center p-8 shadow-sm shadow-black/10"
         onPress={pickImages}
       >
         <Text className="text-base text-white">Tap to upload images</Text>
@@ -97,7 +97,7 @@ export default function AddClothesScreen() {
           className={`w-[150px] py-3 rounded-lg items-center ${
             imageUris.length === 0 || isLoading
               ? "bg-brandPink opacity-60"
-              : "bg-brandPink"
+              : "bg-brandPink shadow-sm shadow-black/10"
           }`}
           disabled={imageUris.length === 0 || isLoading}
           onPress={handleUpload}
