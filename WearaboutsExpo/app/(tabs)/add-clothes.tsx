@@ -54,7 +54,7 @@ export default function AddClothesScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-[#FFE4E1] justify-center items-center p-4">
+      <View className="flex-1 justify-center items-center p-4">
         <ActivityIndicator size="large" color="#FF69B4" />
         <Text className="mt-2 text-base text-brandPink">Uploading...</Text>
       </View>
@@ -65,7 +65,8 @@ export default function AddClothesScreen() {
     <View className="flex-1 p-4">
       {/* Upload Area */}
       <TouchableOpacity
-        className="w-full mb-4 rounded-2xl bg-brandPink justify-center items-center p-5"
+        activeOpacity={0.7}
+        className="w-full mb-4 rounded-2xl bg-brandPink justify-center items-center p-8 shadow-sm shadow-black/10"
         onPress={pickImages}
       >
         <Text className="text-base text-white">Tap to upload images</Text>
@@ -78,6 +79,7 @@ export default function AddClothesScreen() {
             <View key={index} className="relative p-1 w-1/4">
               <Image source={{ uri }} className="aspect-square rounded-lg" />
               <TouchableOpacity
+                activeOpacity={0.7}
                 className="absolute top-1 right-1 bg-[#fd6cb5] w-6 h-6 rounded-full justify-center items-center"
                 onPress={() => deleteImage(uri)}
               >
@@ -91,10 +93,11 @@ export default function AddClothesScreen() {
       {/* Sticky Upload Button */}
       <View className="items-center pt-4">
         <TouchableOpacity
+          activeOpacity={0.7}
           className={`w-[150px] py-3 rounded-lg items-center ${
             imageUris.length === 0 || isLoading
-              ? "bg-brandPink"
-              : "bg-[#FF69B4]"
+              ? "bg-brandPink opacity-60"
+              : "bg-brandPink shadow-sm shadow-black/10"
           }`}
           disabled={imageUris.length === 0 || isLoading}
           onPress={handleUpload}
