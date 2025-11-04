@@ -11,9 +11,8 @@ A lightweight web app that helps college students pre-plan outfits for events li
 ## ✨ Features
 
 - Upload real photos of your wardrobe
-- Tag and organize clothing items manually
-- Plan outfits and save them to a calendar
-- View upcoming events with outfit previews
+- Generate outfits
+- Save Outifts for events
 - Clean, responsive UI for mobile and desktop
 
 ## 🚀 Getting Started
