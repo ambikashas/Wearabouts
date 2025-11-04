@@ -125,8 +125,8 @@ export default function AddClothesScreen() {
           activeOpacity={0.7}
           className={`w-[150px] py-3 rounded-lg items-center ${
             imageUris.length === 0 || isLoading
-              ? "bg-brandPink opacity-60"
-              : "bg-brandPink shadow-sm shadow-black/10"
+              ? "bg-brandPink"
+              : "bg-[#FF69B4]"
           }`}
           disabled={imageUris.length === 0 || isLoading}
           onPress={handleUpload}
