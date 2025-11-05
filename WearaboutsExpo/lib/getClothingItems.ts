@@ -10,6 +10,22 @@ export async function getClothingItems() {
   return data;
 }
 
+export async function getClothingItemsPerType(
+  type: string,
+  offset = 0,
+  limit = 10
+) {
+  const { data, error } = await supabase
+    .from("clothing_items")
+    .select("id, name, image_url, tags, type")
+    .eq("type", type)
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (error) throw error;
+  return data;
+}
+
 export async function getClothingItemUrl(id: string) {
   if (!id) return null;
 
@@ -33,4 +49,3 @@ export async function getClothingItemUrl(id: string) {
 
   return publicUrlData?.publicUrl ?? null;
 }
-

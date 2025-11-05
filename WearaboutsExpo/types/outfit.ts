@@ -1,11 +1,3 @@
-export type OutfitItem = {
-  id: string;
-  type: OutfitTypes;
-  subtype: string;
-  color: string;
-  image: string;
-};
-
 export type Outfit = {
   id: string;
   name: string;
@@ -15,11 +7,18 @@ export type Outfit = {
   shoes: string;
 };
 
-export const allOutfitItemTypes = ["top", "bottom", "full"] as const;
+export const typeDisplayNames: Record<string, string> = {
+  top: "Tops",
+  bottom: "Bottoms",
+  shoes: "Shoes",
+  full: "Fulls",
+};
+
+export const allOutfitItemTypes = ["top", "bottom", "full", "shoes"] as const;
 
 export type OutfitTypes = (typeof allOutfitItemTypes)[number];
 
 export type HasImage = {
   id: string;
-  image: string;
+  image_url: string;
 };
