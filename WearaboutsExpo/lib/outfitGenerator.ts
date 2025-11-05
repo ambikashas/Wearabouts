@@ -1,6 +1,8 @@
 export type ClothingItem = { // TEMPORARY
+  id: string;
   name: string;
-  url: string;
+  image_url: string;
+  tags: string[];
   type: "top" | "bottom" | "full" | "shoes";
 };
 
