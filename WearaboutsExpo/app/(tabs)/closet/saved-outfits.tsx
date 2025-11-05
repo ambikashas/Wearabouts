@@ -1,98 +1,101 @@
-import React, { useState } from "react";
-import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
+import { getClothingItemUrl } from "@/lib/getClothingItems";
+import { getOutfits } from "@/lib/getOutfits";
+import { Outfit } from "@/types/outfit";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
 
-const categorizedOutfits: { [category: string]: string[][] } = {
-  Party: [
-    [
-      "https://via.placeholder.com/100x100?text=Top",
-      "https://via.placeholder.com/100x100?text=Bottom",
-      "https://via.placeholder.com/100x100?text=Shoes",
-    ],
-  ],
-  Formal: [
-    [
-      "https://via.placeholder.com/100x100?text=Jacket",
-      "https://via.placeholder.com/100x100?text=Jeans",
-      "https://via.placeholder.com/100x100?text=Sneakers",
-    ],
-    [
-      "https://via.placeholder.com/100x100?text=Blazer",
-      "https://via.placeholder.com/100x100?text=Shirt",
-      "https://via.placeholder.com/100x100?text=Heels",
-    ],
-  ],
-  Casual: [],
-  Other: [],
-};
+export default function SavedOutfitsScreen() {
+  const [outfits, setOutfits] = useState<Outfit[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
 
-const SavedOutfitsScreen = () => {
-  const [outfitsByCategory, setOutfitsByCategory] =
-    useState(categorizedOutfits);
+  const PAGE_SIZE = 10;
 
-  const handleDelete = (category: string, idx: number) => {
-    setOutfitsByCategory((prev) => {
-      const updated = { ...prev };
-      updated[category] = updated[category].filter((_, i) => i !== idx);
-      return updated;
-    });
+  // Fetch paginated outfits
+  const fetchOutfits = async () => {
+    if (loading || !hasMore) return;
+    setLoading(true);
+
+    try {
+      const { data, hasMore } = await getOutfits(page, PAGE_SIZE);
+      setHasMore(hasMore);
+      setOutfits((prev) => [...prev, ...(data as Outfit[])]);
+      setPage((prev) => prev + 1);
+    } catch (err: any) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const renderOutfit =
-    (category: string) =>
-    ({ item, index }: { item: string[] | undefined; index: number }) => {
-      if (!Array.isArray(item)) return null;
-      return (
-        <View className="mb-6 bg-white rounded-xl p-4 shadow-md shadow-black/10">
-          <Text className="mb-2 font-bold text-base">
-            Outfit {index + 1} Name
-          </Text>
-          <View className="flex-row justify-between mb-3">
-            {item.map((uri, i) => (
+  useEffect(() => {
+    fetchOutfits();
+  }, []);
+
+  const renderItem = ({ item }: { item: Outfit }) => (
+    <OutfitCard outfit={item} />
+  );
+
+  return (
+    <View className="flex-1 p-4">
+      <FlatList
+        data={outfits}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        onEndReached={fetchOutfits}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          loading ? (
+            <ActivityIndicator testID="ActivityIndicator" size="small" />
+          ) : null
+        }
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 16 }}
+      />
+    </View>
+  );
+}
+
+function OutfitCard({ outfit }: { outfit: Outfit }) {
+  const [images, setImages] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadImages = async () => {
+      const ids = outfit.full
+        ? [outfit.full, outfit.shoes].filter(Boolean)
+        : [outfit.top, outfit.bottom, outfit.shoes].filter(Boolean);
+
+      const urls = await Promise.all(
+        ids.map((id) => getClothingItemUrl(id as string))
+      );
+      setImages(urls.filter(Boolean) as string[]);
+      setLoading(false);
+    };
+    loadImages();
+  }, [outfit]);
+
+  return (
+    <View
+      testID="OutfitCard"
+      className="bg-white rounded-lg shadow flex-1 mb-4"
+    >
+      <View className="p-4 rounded-xl shadow-md shadow-black/10">
+        <Text className="mb-2 font-bold text-base">{outfit.name}</Text>
+        <View className="flex-row justify-start mb-3">
+          {loading ? (
+            <ActivityIndicator size="small" />
+          ) : (
+            images.map((uri, i) => (
               <Image
                 key={i}
                 source={{ uri }}
                 className="w-20 h-20 rounded-lg mx-1 bg-[#EEE]"
               />
-            ))}
-          </View>
-          <TouchableOpacity
-            className="self-end bg-[#fd6cb5] py-[6px] px-4 rounded-lg"
-            onPress={() => handleDelete(category, index)}
-          >
-            <Text className="text-white font-bold">Delete</Text>
-          </TouchableOpacity>
+            ))
+          )}
         </View>
-      );
-    };
-
-  return (
-    <View className="flex-1 p-4">
-      <View className="h-10" />
-      <Text className="mb-4 text-center text-xl font-normal">
-        Saved Outfits
-      </Text>
-      <FlatList
-        data={Object.keys(outfitsByCategory)}
-        renderItem={({ item: category }) => (
-          <View className="mb-8">
-            <Text className="mb-2 font-bold text-lg">{category}</Text>
-            {outfitsByCategory[category].length === 0 ? (
-              <Text>No outfits in this category.</Text>
-            ) : (
-              <FlatList
-                data={outfitsByCategory[category]}
-                renderItem={renderOutfit(category)}
-                keyExtractor={(_, idx) => idx.toString()}
-                contentContainerClassName="py-2"
-              />
-            )}
-          </View>
-        )}
-        keyExtractor={(category) => category}
-        contentContainerClassName="pb-8"
-      />
+      </View>
     </View>
   );
-};
-
-export default SavedOutfitsScreen;
+}
