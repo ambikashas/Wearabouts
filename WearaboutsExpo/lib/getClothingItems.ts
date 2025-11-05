@@ -3,7 +3,7 @@ import { supabase } from "./supabase";
 export async function getClothingItems() {
   const { data, error } = await supabase
     .from("clothing_items")
-    .select("id, name, image_url, tags")
+    .select("id, name, image_url, tags, type")
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -15,15 +15,21 @@ export async function getClothingItemUrl(id: string) {
 
   const { data, error } = await supabase
     .from("clothing_items")
-    .select("id, image_url")
+    .select("image_url")
     .eq("id", id)
     .single();
 
   if (error || !data?.image_url) return null;
 
+  const path = data.image_url;
+
+  if (path.startsWith("http")) {
+    return path;
+  }
+
   const { data: publicUrlData } = supabase.storage
     .from("Clothes")
-    .getPublicUrl(data.image_url);
+    .getPublicUrl(path);
 
   return publicUrlData?.publicUrl ?? null;
 }
