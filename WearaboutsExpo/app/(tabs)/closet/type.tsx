@@ -1,32 +1,24 @@
 import ListVerticalScrollDisplay from "@/components/ImageListVerticalScrollDisplay";
-import { mockOutfits } from "@/mock-data/items";
-import { allOutfitItemTypes } from "@/types/outfit";
+import { allOutfitItemTypes, typeDisplayNames } from "@/types/outfit";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import { View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { ChevronDownIcon } from "react-native-heroicons/outline";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ItemsPerType() {
   const { type } = useLocalSearchParams<{ type: string }>();
   const router = useRouter();
 
-  const [selected, setSelected] = useState(type);
-
-  const filteredData = mockOutfits.filter(
-    (item) => item.type.toLowerCase() === selected.toLowerCase()
-  );
-
-  const titleCase = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+  const [selected, setSelected] = useState(type ?? "top");
 
   const dropdownData = allOutfitItemTypes.map((typeItem) => ({
-    label: titleCase(typeItem) + "s",
+    label: typeDisplayNames[typeItem],
     value: typeItem,
   }));
 
   return (
-    <SafeAreaView edges={["left", "right", "bottom"]}>
+    <View className="flex-1">
       <View className="px-4 py-3">
         <Dropdown
           data={dropdownData}
@@ -45,9 +37,8 @@ export default function ItemsPerType() {
           renderRightIcon={() => <ChevronDownIcon size={24} />}
         />
       </View>
-
       <ListVerticalScrollDisplay
-        data={filteredData}
+        type={selected}
         onPressItem={(id: string) =>
           router.push({
             pathname: "/closet/[id]",
@@ -55,6 +46,6 @@ export default function ItemsPerType() {
           })
         }
       />
-    </SafeAreaView>
+    </View>
   );
 }

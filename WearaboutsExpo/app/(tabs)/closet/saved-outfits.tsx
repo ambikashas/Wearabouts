@@ -50,7 +50,7 @@ export default function SavedOutfitsScreen() {
             <ActivityIndicator testID="ActivityIndicator" size="small" />
           ) : null
         }
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 16 }}
+        contentContainerStyle={{ paddingHorizontal: 8, paddingBottom: 16 }}
       />
     </View>
   );
@@ -76,13 +76,10 @@ function OutfitCard({ outfit }: { outfit: Outfit }) {
   }, [outfit]);
 
   return (
-    <View
-      testID="OutfitCard"
-      className="bg-white rounded-lg shadow flex-1 mb-4"
-    >
-      <View className="p-4 rounded-xl shadow-md shadow-black/10">
+    <View testID="OutfitCard" className="bg-white rounded-lg shadow mb-4">
+      <View className="p-2 px-4 rounded-xl shadow-md shadow-black/10">
         <Text className="mb-2 font-bold text-base">{outfit.name}</Text>
-        <View className="flex-row justify-start mb-3">
+        <View className="flex-row justify-start gap-4 mb-3">
           {loading ? (
             <ActivityIndicator size="small" />
           ) : (
@@ -90,7 +87,7 @@ function OutfitCard({ outfit }: { outfit: Outfit }) {
               <Image
                 key={i}
                 source={{ uri }}
-                className="w-20 h-20 rounded-lg mx-1 bg-[#EEE]"
+                className="w-20 h-20 rounded-lg bg-[#EEE]"
               />
             ))
           )}
