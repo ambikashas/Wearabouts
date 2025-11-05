@@ -1,4 +1,3 @@
-import React from "react";
 import { render, screen, waitFor } from "@testing-library/react-native";
 import { Image } from "react-native";
 import SavedOutfitsScreen from "../app/(tabs)/closet/saved-outfits";
