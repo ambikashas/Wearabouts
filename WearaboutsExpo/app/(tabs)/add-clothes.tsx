@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import ConfettiCannon from "react-native-confetti-cannon";
 import { uploadClothingItem } from "@/lib/uploadClothingItem";
 
@@ -17,6 +18,7 @@ export default function AddClothesScreen() {
   const [imageUris, setImageUris] = useState<string[]>([]);
   const [itemName, setItemName] = useState("");
   const [tags, setTags] = useState("");
+  const [type, setType] = useState<"top" | "bottom" | "full" | "shoes" | "">(""); // ← NEW
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const confettiRef = useRef(null);
@@ -40,19 +42,20 @@ export default function AddClothesScreen() {
   };
 
   const handleUpload = async () => {
-    if (imageUris.length === 0) return;
+    if (imageUris.length === 0 || !type) return;
     setIsLoading(true);
 
     try {
       const tagsArray = tags.split(",").map((t) => t.trim()).filter(Boolean);
 
       for (const uri of imageUris) {
-        await uploadClothingItem(uri, itemName || "Unnamed", tagsArray);
+        await uploadClothingItem(uri, itemName || "Unnamed", tagsArray, type); // ← send type
       }
 
       setImageUris([]);
       setItemName("");
       setTags("");
+      setType("");
       setShowSuccess(true);
       (confettiRef.current as any)?.start();
 
@@ -100,6 +103,20 @@ export default function AddClothesScreen() {
         className="border border-gray-300 rounded-lg p-3 mb-4 text-base bg-white"
       />
 
+      {/* Type Dropdown */}
+      <View className="border border-gray-300 rounded-lg mb-4 bg-white">
+        <Picker
+          selectedValue={type}
+          onValueChange={(value) => setType(value)}
+        >
+          <Picker.Item label="Select Type..." value="" />
+          <Picker.Item label="Top" value="top" />
+          <Picker.Item label="Bottom" value="bottom" />
+          <Picker.Item label="Full (dress, jumpsuit, etc.)" value="full" />
+          <Picker.Item label="Shoes" value="shoes" />
+        </Picker>
+      </View>
+
       {/* Selected Images */}
       <ScrollView showsVerticalScrollIndicator={false}>
         <View className="flex flex-row flex-wrap">
@@ -121,11 +138,11 @@ export default function AddClothesScreen() {
       <View className="items-center pt-4">
         <TouchableOpacity
           className={`w-[150px] py-3 rounded-lg items-center ${
-            imageUris.length === 0 || isLoading
+            imageUris.length === 0 || isLoading || !type
               ? "bg-brandPink"
               : "bg-[#FF69B4]"
           }`}
-          disabled={imageUris.length === 0 || isLoading}
+          disabled={imageUris.length === 0 || isLoading || !type}
           onPress={handleUpload}
         >
           <Text className="text-white font-bold text-base">Upload</Text>
