@@ -50,7 +50,7 @@ export default function ItemsPerType() {
         data={filteredData}
         onPressItem={(id: string) =>
           router.push({
-            pathname: "./[id]",
+            pathname: "/closet/[id]",
             params: { id },
           })
         }
