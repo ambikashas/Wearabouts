@@ -41,7 +41,7 @@ export default function ItemsCloset() {
                 onPressSeeMore={onPreeSeeMore}
                 onPressItem={(id: string) =>
                   router.push({
-                    pathname: "./[id]",
+                    pathname: "/closet/[id]",
                     params: { id: id },
                   })
                 }

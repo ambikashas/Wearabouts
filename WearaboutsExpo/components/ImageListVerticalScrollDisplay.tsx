@@ -1,6 +1,5 @@
 import { HasImage } from "@/types/outfit";
-import { FlatList, Image, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { FlatList, Image, TouchableOpacity, View } from "react-native";
 
 export default function ListVerticalScrollDisplay<T extends HasImage>({
   data,
@@ -19,10 +18,12 @@ export default function ListVerticalScrollDisplay<T extends HasImage>({
       contentContainerClassName="gap-4 py-2"
       renderItem={({ item }) => (
         <View className="bg-white rounded-lg shadow flex-1">
-          <Image
-            source={{ uri: item.image }}
-            className="h-60 w-full rounded-t-lg p-2"
-          />
+          <TouchableOpacity onPress={() => onPressItem(item.id)}>
+            <Image
+              source={{ uri: item.image }}
+              className="h-60 w-full rounded-t-lg p-2"
+            />
+          </TouchableOpacity>
         </View>
       )}
     />
