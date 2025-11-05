@@ -7,7 +7,8 @@ import { decode as atob } from "base-64";
 export async function uploadClothingItem(
   uri: string,
   name: string,
-  tags: string[]
+  tags: string[],
+  type: string
 ) {
   try {
     // Get file extension
@@ -48,7 +49,8 @@ export async function uploadClothingItem(
     const { error: dbError } = await supabase.from("clothing_items").insert({
       name,
       tags,
-      image_url,
+      type,
+      image_url
     });
 
     if (dbError) throw dbError;
