@@ -18,14 +18,12 @@ export default function ClosetLayout() {
       <Stack.Screen
         name="index"
         options={{
-          animation: "slide_from_bottom",
           headerTitle: () => <ClosetHeaderDropdown />,
         }}
       />
       <Stack.Screen
         name="saved-outfits"
         options={{
-          animation: "slide_from_bottom",
           headerTitle: () => <ClosetHeaderDropdown />,
         }}
       />
