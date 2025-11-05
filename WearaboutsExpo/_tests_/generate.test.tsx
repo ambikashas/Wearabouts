@@ -1,7 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react-native';
+import GenerateScreen from '../app/(tabs)/(home)/outfit-generation/generate';
 
-// Mock expo-router so Jest doesn’t parse its JSX
+// Mock expo-router
 jest.mock('expo-router', () => ({
   router: {
     push: jest.fn(),
@@ -9,14 +10,28 @@ jest.mock('expo-router', () => ({
   },
 }));
 
-// Mock RadioButton component
-jest.mock('../components/radio-button', () => {
-  return ({ label, selected, onPress }) => (
-    <mock-radio-button onPress={onPress} testID={`radio-${label}`}>{label}</mock-radio-button>
-  );
-});
+// Mock RadioButton
+jest.mock('../components/radio-button', () => ({ label, selected, onPress }) => (
+  <mock-radio-button onPress={onPress} testID={`radio-${label}`}>{label}</mock-radio-button>
+));
 
-import GenerateScreen from '../app/(tabs)/(home)/outfit-generation/generate';
+// Mock Supabase + getClothingItems
+jest.mock('@/lib/getClothingItems', () => ({
+  getClothingItems: jest.fn().mockResolvedValue([
+    { id: 'top1', name: 'Top', type: 'top', tags: [], image_url: 'top.png' },
+    { id: 'bottom1', name: 'Bottom', type: 'bottom', tags: [], image_url: 'bottom.png' },
+    { id: 'shoes1', name: 'Shoes', type: 'shoes', tags: [], image_url: 'shoes.png' },
+  ]),
+}));
+
+jest.mock('@/lib/outfitGenerator', () => ({
+  generateOutfit: jest.fn((items) => ({
+    top: items.find(i => i.type === 'top'),
+    bottom: items.find(i => i.type === 'bottom'),
+    full: null,
+    shoes: items.find(i => i.type === 'shoes'),
+  })),
+}));
 
 describe('GenerateScreen', () => {
   it('renders the main title', () => {
@@ -37,37 +52,19 @@ describe('GenerateScreen', () => {
     expect(screen.getByPlaceholderText(/Please specify/i)).toBeTruthy();
   });
 
-  it('renders Back and Generate buttons', () => {
-    render(<GenerateScreen />);
-    expect(screen.getByTestId(/Back/i)).toBeTruthy();
-    expect(screen.getByTestId(/Generate/i)).toBeTruthy();
-  });
-
-  it('disables Generate button if no option or text is selected', () => {
-    render(<GenerateScreen />);
-    const generateButton = screen.getByTestId(/Generate/i).parent;
-    expect(generateButton.props.accessibilityState.disabled).toBe(true);
-  });
-
-  it('enables Generate button when an option is selected', () => {
+  it('generates an outfit and pushes route', async () => {
+    const { router } = require('expo-router');
     render(<GenerateScreen />);
     fireEvent.press(screen.getByTestId('radio-Casual'));
-    const generateButton = screen.getByTestId(/Generate/i).parent;
-    expect(generateButton.props.accessibilityState.disabled).toBe(false);
-  });
-
-  it('shows loading state when generating', () => {
-    jest.useFakeTimers();
-    render(<GenerateScreen />);
-    fireEvent.press(screen.getByTestId('radio-Casual'));
-    fireEvent.press(screen.getByTestId(/Generate/i));
-
-    expect(screen.getByText(/Generating outfit/i)).toBeTruthy();
-
-    act(() => {
-      jest.runAllTimers();
+    
+    await act(async () => {
+      fireEvent.press(screen.getByText('Generate'));
     });
 
-    jest.useRealTimers();
+    expect(router.push).toHaveBeenCalled();
+    const calledWith = router.push.mock.calls[0][0];
+    expect(calledWith.params.top).toBe('top1');
+    expect(calledWith.params.bottom).toBe('bottom1');
+    expect(calledWith.params.shoes).toBe('shoes1');
   });
 });

@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   ActivityIndicator,
   Modal,
@@ -7,41 +7,56 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Image,
 } from "react-native";
 import ConfettiCannon from "react-native-confetti-cannon";
+import { getClothingItemUrl } from "@/lib/getClothingItems";
+import { uploadGeneratedOutfit } from "@/lib/uploadOutfits";
 
-export default function EventSummaryScreen() {
-  const { eventType } = useLocalSearchParams();
+export default function GeneratedOutfitScreen() {
+  const { eventType, top, bottom, full, shoes } = useLocalSearchParams();
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [outfitName, setOutfitName] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const confettiRef = useRef(null);
 
-  const [outfitName, setOutfitName] = React.useState("");
-  const [isSaving, setIsSaving] = React.useState(false);
-  const [showSuccess, setShowSuccess] = React.useState(false);
-  const confettiRef = React.useRef(null);
+  useEffect(() => {
+    const loadImages = async () => {
+      const ids = full ? [full, shoes].filter(Boolean) : [top, bottom, shoes].filter(Boolean);
+      const urls = await Promise.all(ids.map((id) => getClothingItemUrl(id as string)));
+      setImageUrls(urls.filter(Boolean) as string[]);
+    };
+    loadImages();
+  }, [top, bottom, full, shoes]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!outfitName.trim()) return;
-
     setIsSaving(true);
-    setTimeout(() => {
-      setIsSaving(false);
+
+    try {
+      await uploadGeneratedOutfit({
+        name: outfitName,
+        event_type: eventType as string,
+        top: top as string,
+        bottom: bottom as string,
+        full: full as string,
+        shoes: shoes as string,
+      });
+
       setShowSuccess(true);
-
-      setTimeout(() => {
-        if (confettiRef.current) {
-          (confettiRef.current as any).start();
-        }
-      }, 100);
-
-      setTimeout(() => {
-        setShowSuccess(false);
-        router.back();
-      }, 3000);
-    }, 1500);
+      setTimeout(() => setShowSuccess(false), 3000);
+    } catch (err) {
+      console.error("Error saving outfit:", err);
+      alert("Failed to save outfit. Check console for details.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (isSaving) {
     return (
-      <View className="flex-1 p-5 justify-center items-center">
+      <View className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" color="#FF69B4" />
         <Text className="mt-2 text-base text-brandPink">Saving outfit...</Text>
       </View>
@@ -50,31 +65,39 @@ export default function EventSummaryScreen() {
 
   return (
     <View className="flex-1 p-5">
-      {/* Header */}
-      <View className="mt-12 items-center">
-        <Text className="text-2xl font-bold text-brandPink">Event Summary</Text>
+      <Text className="text-2xl font-bold text-brandPink text-center mt-10">
+        Event Summary
+      </Text>
+      <Text className="text-base text-brandPink mt-4 text-center">
+        Event Type: {eventType || "—"}
+      </Text>
 
-        <Text className="text-base text-brandPink mt-4 mb-1">
-          Selected Event Type:
-        </Text>
-        <Text className="text-lg font-semibold text-[#333] mb-5">
-          {eventType || "—"}
-        </Text>
-
-        <Text className="text-base text-brandPink mb-1">
-          Generated Outfit Preview:
-        </Text>
-        <View className="h-[150px] w-full border-2 border-[#FFB6C1] rounded-xl bg-[#FFF0F5] mb-5" />
-        <TextInput
-          className="border-1.5 border-[#FFB6C1] rounded-lg p-3 text-base bg-[#FFF0F5] text-[#333] mb-5 w-full"
-          onChangeText={setOutfitName}
-          value={outfitName}
-          placeholder="Name your outfit"
-          placeholderTextColor="#666"
-        />
+      {/* Outfit Preview */}
+      <View className="flex-row justify-center flex-wrap mt-6">
+        {imageUrls.length === 0 ? (
+          <ActivityIndicator size="small" />
+        ) : (
+          imageUrls.map((uri, i) => (
+            <Image
+              key={i}
+              source={{ uri }}
+              className="w-28 h-28 rounded-lg mx-2 mb-2 bg-[#EEE]"
+              resizeMode="cover"
+            />
+          ))
+        )}
       </View>
 
-      {/* Bottom Buttons */}
+
+      <TextInput
+        className="border border-[#FFB6C1] rounded-lg p-3 text-base bg-[#FFF0F5] text-[#333] mt-5"
+        placeholder="Name your outfit"
+        placeholderTextColor="#666"
+        onChangeText={setOutfitName}
+        value={outfitName}
+      />
+
+      {/* Buttons */}
       <View className="absolute bottom-7 left-5 right-5 flex-row justify-between">
         <TouchableOpacity
           className="flex-1 py-3 rounded-lg items-center bg-[#FFC0CB] mx-2"
@@ -91,22 +114,18 @@ export default function EventSummaryScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Success Modal */}
+      {/* Success modal */}
       <Modal transparent={true} visible={showSuccess} animationType="fade">
         <View className="flex-1 bg-black/40 justify-center items-center">
-          <Text className="text-2xl font-bold text-white text-center">
-            Outfit Saved!
-          </Text>
-          {showSuccess && (
-            <ConfettiCannon
-              ref={confettiRef}
-              count={200}
-              origin={{ x: -10, y: 0 }}
-              autoStart={false}
-              fadeOut
-              colors={["#FF69B4", "#FFB6C1", "#FFF0F5", "#DB7093"]}
-            />
-          )}
+          <Text className="text-2xl font-bold text-white">Outfit Saved!</Text>
+          <ConfettiCannon
+            ref={confettiRef}
+            count={200}
+            origin={{ x: -10, y: 0 }}
+            autoStart={false}
+            fadeOut
+            colors={["#FF69B4", "#FFB6C1", "#FFF0F5", "#DB7093"]}
+          />
         </View>
       </Modal>
     </View>

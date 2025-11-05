@@ -57,7 +57,9 @@ export default function AddClothesScreen() {
       setTags("");
       setType("");
       setShowSuccess(true);
-      (confettiRef.current as any)?.start();
+
+      // removed invalid start() call — confetti auto-starts when mounted
+      // (confettiRef.current as any)?.start();
 
       setTimeout(() => setShowSuccess(false), 3000);
     } catch (err) {
