@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { generateOutfit } from "@/lib/outfitGenerator";
+import { getClothingItems } from "@/lib/getClothingItems";
 
 export default function GenerateScreen() {
   const [selectedOption, setSelectedOption] = useState("");
@@ -16,18 +18,31 @@ export default function GenerateScreen() {
 
   const options = ["Casual", "Work", "Party", "Formal", "Other"];
 
-  const handleGenerate = () => {
-    const event = selectedOption === "Other" ? otherText : selectedOption;
-    if (!event.trim()) return;
+  const handleGenerate = async () => {
+    const eventType = selectedOption === "Other" ? otherText : selectedOption;
+    if (!eventType.trim()) return;
 
     setIsGenerating(true);
-    setTimeout(() => {
-      setIsGenerating(false);
+    try {
+      const items = await getClothingItems();
+      const outfit = generateOutfit(items);
+      
       router.push({
         pathname: "./generated-outfit",
-        params: { eventType: event },
+        params: {
+          eventType,
+          top: outfit.top?.id ?? "",
+          bottom: outfit.bottom?.id ?? "",
+          full: outfit.full?.id ?? "",
+          shoes: outfit.shoes?.id ?? "",
+        },
       });
-    }, 1200);
+
+    } catch (err) {
+      console.error("Error generating outfit:", err);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   if (isGenerating) {
@@ -43,7 +58,7 @@ export default function GenerateScreen() {
 
   return (
     <View className="flex-1 p-5">
-      {/* Event Type Selection */}
+      {/* Event Selection */}
       <View className="mt-8">
         <Text className="text-lg font-semibold text-brandPink mb-3">
           Select Event Type
@@ -55,40 +70,34 @@ export default function GenerateScreen() {
             label={option}
             selected={selectedOption === option}
             onPress={() => setSelectedOption(option)}
-            testID={`radio-${option}`}
           />
         ))}
 
         {selectedOption === "Other" && (
           <TextInput
-            className="border-[1.5px] border-[#FFB6C1] rounded-lg p-3 text-base bg-[#FFF0F5] text-[#333] mt-2"
+            className="border border-[#FFB6C1] rounded-lg p-3 text-base bg-[#FFF0F5] text-[#333] mt-2"
             placeholder="Please specify"
-            placeholderTextColor="#888"
             onChangeText={setOtherText}
             value={otherText}
           />
         )}
       </View>
 
-      {/* Bottom Buttons */}
+      {/* Buttons */}
       <View className="absolute bottom-7 left-5 right-5 flex-row justify-between">
         <TouchableOpacity
           className="flex-1 py-3 rounded-lg items-center bg-[#FFC0CB] mx-2"
           onPress={() => router.back()}
-          testID="back-button"
         >
           <Text className="text-base font-bold text-white">Back</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           className={`flex-1 py-3 rounded-lg items-center mx-2 ${
-            selectedOption || otherText
-              ? "bg-[#FF69B4]"
-              : "bg-[#FFC0CB] opacity-60"
+            selectedOption || otherText ? "bg-[#FF69B4]" : "bg-[#FFC0CB] opacity-60"
           }`}
           disabled={!selectedOption && !otherText}
           onPress={handleGenerate}
-          testID="generate-button"
         >
           <Text className="text-base font-bold text-white">Generate</Text>
         </TouchableOpacity>

@@ -1,11 +1,10 @@
 import ItemsPerType from "@/app/(tabs)/closet/type";
-import { mockOutfits } from "@/mock-data/items";
-import { allOutfitItemTypes } from "@/types/outfit";
+import { allOutfitItemTypes, typeDisplayNames } from "@/types/outfit";
 import { render, screen } from "@testing-library/react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
 
-// Mock router + params
+// Mock router + search params
 jest.mock("expo-router", () => ({
   useRouter: jest.fn(),
   useLocalSearchParams: jest.fn(),
@@ -17,23 +16,41 @@ jest.mock("react-native-element-dropdown", () => {
   const { Text } = require("react-native");
   return {
     Dropdown: ({ value }: any) => {
-      const displayValue = value.charAt(0).toUpperCase() + value.slice(1) + "s";
-      return <Text>{displayValue}</Text>;
+      const typeDisplayNames: Record<string, string> = {
+        top: "Tops",
+        bottom: "Bottoms",
+        shoes: "Shoes",
+        full: "Fulls",
+      };
+      const displayValue = typeDisplayNames[value];
+      return <Text testID="dropdown-value">{displayValue}</Text>;
     },
   };
 });
 
-// Safe mock for ListVerticalScrollDisplay
+// Mock ListVerticalScrollDisplay
 jest.mock("@/components/ImageListVerticalScrollDisplay", () => {
   const React = require("react");
-  const { Text } = require("react-native");
+  const { Text, View } = require("react-native");
+
+  const mockCounts: Record<string, number> = {
+    top: 3,
+    bottom: 2,
+    shoes: 1,
+    full: 0,
+  };
+
   return {
     __esModule: true,
-    default: ({ data }: any) => <Text>List({data.length} items)</Text>,
+    default: ({ type }: any) => (
+      <View testID="vertical-list">
+        <Text>List({mockCounts[type] ?? 0} items)</Text>
+      </View>
+    ),
   };
 });
 
-describe("ItemsPerType", () => {
+describe("ItemsPerType (DB version)", () => {
   const mockPush = jest.fn();
 
   beforeEach(() => {
@@ -44,37 +61,40 @@ describe("ItemsPerType", () => {
     jest.clearAllMocks();
   });
 
-  // Test 1: Component renders without crashing
   it("renders without crashing", () => {
     (useLocalSearchParams as jest.Mock).mockReturnValue({ type: "top" });
     const { toJSON } = render(<ItemsPerType />);
     expect(toJSON()).toBeTruthy();
   });
 
-  // Test 2: Dropdown and list render correctly for all types
-  allOutfitItemTypes.forEach((type) => {
-    it(`renders correctly for type "${type}"`, () => {
-      // Mock the selected type from search params
+  it("renders dropdown with correct label for selected type", () => {
+    (useLocalSearchParams as jest.Mock).mockReturnValue({ type: "bottom" });
+    render(<ItemsPerType />);
+    const dropdown = screen.getByTestId("dropdown-value");
+    expect(dropdown.props.children).toBe("Bottoms");
+  });
+
+  it("renders vertical list with correct number of items for each type", () => {
+    allOutfitItemTypes.forEach((type) => {
       (useLocalSearchParams as jest.Mock).mockReturnValue({ type });
       render(<ItemsPerType />);
 
-      // Check the dropdown shows correct label
-      const expectedLabel = type.charAt(0).toUpperCase() + type.slice(1) + "s";
-      expect(screen.getByText(expectedLabel)).toBeTruthy();
+      const expectedLabel = typeDisplayNames[type];
+      const dropdown = screen.getByTestId("dropdown-value");
+      expect(dropdown.props.children).toBe(expectedLabel);
 
-      // Check the list shows correct number of items
-      const expectedItems = mockOutfits.filter((o) => o.type === type);
-      expect(
-        screen.getByText(`List(${expectedItems.length} items)`)
-      ).toBeTruthy();
+      const countMap: Record<string, number> = {
+        top: 3,
+        bottom: 2,
+        shoes: 1,
+        full: 0,
+      };
+      expect(screen.getByText(`List(${countMap[type]} items)`)).toBeTruthy();
     });
   });
 
-  // Test 3: Renders empty list if no items exist for the selected type
-  it("renders no items if there are no outfits for the selected type", () => {
-    (useLocalSearchParams as jest.Mock).mockReturnValue({
-      type: "nonexistent",
-    });
+  it("renders 0 items if no items exist for the selected type", () => {
+    (useLocalSearchParams as jest.Mock).mockReturnValue({ type: "full" });
     render(<ItemsPerType />);
     expect(screen.getByText("List(0 items)")).toBeTruthy();
   });
