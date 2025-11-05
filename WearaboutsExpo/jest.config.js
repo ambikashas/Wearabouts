@@ -1,6 +1,9 @@
 module.exports = {
-  preset: "react-native",
+  preset: "jest-expo",
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
+  transformIgnorePatterns: [
+    "node_modules/(?!(jest-)?@?react-native|expo|@expo|@unimodules)",
+  ],
   transform: {
     "^.+\\.(js|jsx|ts|tsx)$": "babel-jest",
   },
