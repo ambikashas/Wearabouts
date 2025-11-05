@@ -107,6 +107,7 @@ export default function AddClothesScreen() {
       {/* Type Dropdown */}
       <View className="border border-gray-300 rounded-lg mb-4 bg-white">
         <Picker
+          testID="picker-type"
           selectedValue={type}
           onValueChange={(value) => setType(value)}
         >
