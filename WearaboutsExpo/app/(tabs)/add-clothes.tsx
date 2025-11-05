@@ -54,7 +54,9 @@ export default function AddClothesScreen() {
       setItemName("");
       setTags("");
       setShowSuccess(true);
-      (confettiRef.current as any)?.start();
+
+      // removed invalid start() call — confetti auto-starts when mounted
+      // (confettiRef.current as any)?.start();
 
       setTimeout(() => setShowSuccess(false), 3000);
     } catch (err) {
@@ -146,7 +148,7 @@ export default function AddClothesScreen() {
               ref={confettiRef}
               count={200}
               origin={{ x: -10, y: 0 }}
-              autoStart={false}
+              autoStart={true}        // <-- changed from false to true
               fadeOut
               colors={["#FF69B4", "#FFB6C1", "#FFF0F5", "#DB7093"]}
             />
