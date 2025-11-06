@@ -63,6 +63,10 @@ export default function GeneratedOutfitScreen() {
     );
   }
 
+  if (confettiRef.current) {
+    (confettiRef.current as any).start();
+  }
+
   return (
     <View className="flex-1 p-5">
       <Text className="text-2xl font-bold text-brandPink text-center mt-10">
@@ -99,13 +103,6 @@ export default function GeneratedOutfitScreen() {
 
       {/* Buttons */}
       <View className="absolute bottom-7 left-5 right-5 flex-row justify-between">
-        <TouchableOpacity
-          className="flex-1 py-3 rounded-lg items-center bg-[#FFC0CB] mx-2"
-          onPress={() => router.push("./generate")}
-        >
-          <Text className="text-base font-semibold text-[#333]">Back</Text>
-        </TouchableOpacity>
-
         <TouchableOpacity
           className="flex-1 py-3 rounded-lg items-center bg-[#FF69B4] mx-2"
           onPress={handleSave}
