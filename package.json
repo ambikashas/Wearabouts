@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "expo": "^54.0.19"
   },
   "devDependencies": {
@@ -11,6 +12,6 @@
     "jest": "^30.2.0"
   },
   "scripts": {
-  "test": "jest"
-}
+    "test": "jest"
+  }
 }
