@@ -3,13 +3,13 @@ import { router } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import { generateOutfit } from "@/lib/outfitGenerator";
-import { getClothingItems } from "@/lib/getClothingItems";
+import { supabase } from "@/lib/supabase";
 
 export default function GenerateScreen() {
   const [selectedOption, setSelectedOption] = useState("");
@@ -24,22 +24,43 @@ export default function GenerateScreen() {
 
     setIsGenerating(true);
     try {
-      const items = await getClothingItems();
-      const outfit = generateOutfit(items);
-      
+      // Get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        Alert.alert("Error", "Please log in to generate outfits");
+        return;
+      }
+
+      // Call Supabase Edge Function
+      const { data, error } = await supabase.functions.invoke('generate-outfit', {
+        body: { userId: user.id }
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (!data.success || !data.outfits || data.outfits.length === 0) {
+        throw new Error("No outfits generated");
+      }
+
+      // Navigate to generated outfit with first outfit
+      const outfit = data.outfits[0];
       router.push({
         pathname: "./generated-outfit",
         params: {
           eventType,
-          top: outfit.top?.id ?? "",
-          bottom: outfit.bottom?.id ?? "",
-          full: outfit.full?.id ?? "",
-          shoes: outfit.shoes?.id ?? "",
+          outfitId: outfit.id,
+          outfitName: outfit.name,
+          description: outfit.description,
+          itemIds: JSON.stringify(outfit.item_ids),
         },
       });
-
     } catch (err) {
       console.error("Error generating outfit:", err);
+      Alert.alert(
+        "Error", "Failed to generate outfit. Please try again."
+      );
     } finally {
       setIsGenerating(false);
     }
