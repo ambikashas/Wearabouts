@@ -1,97 +1,216 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+}
 
 serve(async (req) => {
-  // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
-  }
+    console.log('Function invoked')
+
+    // Handle CORS preflight
+    if (req.method === 'OPTIONS') {
+        return new Response('ok', { headers: corsHeaders })
+    }
 
   try {
-    const { userId, eventType } = await req.json();
+    console.log('Parsing request body...')
+    const { userId, eventType } = await req.json()
+    console.log('Request data:', { userId, eventType })
 
-    if (!userId) throw new Error('userId is required');
-    if (!eventType || !eventType.trim()) throw new Error('eventType is required');
+    if (!userId) {
+      throw new Error('userId is required')
+    }
+    
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const geminiKey = Deno.env.get('GEMINI_API_KEY')!
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const geminiKey = Deno.env.get('GEMINI_API_KEY')!;
+    console.log('Environment check:', {
+      hasUrl: !!supabaseUrl,
+      hasSupabaseKey: !!supabaseKey,
+      hasGeminiKey: !!geminiKey
+    })
 
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Fetch clothing items for the user
+    if (!geminiKey) {
+      throw new Error('GEMINI_API_KEY not configured')
+    }
+    
+    const supabase = createClient(supabaseUrl, supabaseKey)
+    
+    // Fetch clothing items - using your actual column names
     const { data: items, error: fetchError } = await supabase
       .from('clothing_items')
-      .select('*')
-      .eq('user_id', userId);
+      .select('id, name, tags, image_url, type')
+      .eq('user_id', userId)
 
-    if (fetchError) throw fetchError;
-    if (!items || items.length === 0) throw new Error('No clothing items found. Please add items to your wardrobe first.');
+    console.log('Items fetched:', { count: items?.length, error: fetchError })
+    
+    if (fetchError) {
+      console.error('Fetch error:', fetchError)
+      throw fetchError
+    }
 
+    if (!items || items.length === 0) {
+      throw new Error('No clothing items found. Please add items to your wardrobe first.')
+    }
+
+    console.log(`Found ${items.length} clothing items for user ${userId}`)
+    
+    // Group items by type
+    const tops = items.filter(i => i.type === 'top')
+    const bottoms = items.filter(i => i.type === 'bottom')
+    const shoes = items.filter(i => i.type === 'shoes')
+    const fulls = items.filter(i => i.type === 'full')
+
+    console.log('Items by type:', {
+      tops: tops.length,
+      bottoms: bottoms.length,
+      shoes: shoes.length,
+      fulls: fulls.length
+    })
+    
+    // Format items for Gemini
+    const itemsDescription = {
+      tops: tops.map(i => ({ id: i.id, name: i.name, tags: i.tags })),
+      bottoms: bottoms.map(i => ({ id: i.id, name: i.name, tags: i.tags })),
+      shoes: shoes.map(i => ({ id: i.id, name: i.name, tags: i.tags })),
+      fulls: fulls.map(i => ({ id: i.id, name: i.name, tags: i.tags }))
+    }
+    
     // Call Gemini API
+    console.log('Calling Gemini API...')
+    const modelName = "gemini-2.5-flash";
     const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${geminiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{
             parts: [{
-              text: `You are a fashion stylist AI.
-Given the event: "${eventType}" and these clothing items with tags: ${JSON.stringify(items, null, 2)}
-Suggest an outfit (top + bottom or full, plus shoes). Only return one of (top + bottom) or (full), not both. Return ONLY valid JSON. Do NOT include any \`\`\` or extra text.
-The format must be:
+text: `
+You are a professional fashion stylist.
+The user is attending an event of type: "${eventType}".
+Given these clothing items (as JSON): ${JSON.stringify(itemsDescription)}
+
+Your task: Create exactly ONE complete outfit suggestion.
+
+Rules:
+- Create output based on the eventType. For example, for "formal event", 
+suggest elegant items; for "casual outing", suggest relaxed styles.
+- Each outfit must include either:
+  (1) a top + bottom + shoes, OR
+  (2) a full outfit item (like a dress) + shoes.
+- Never include both (top/bottom) and (full) in the same outfit.
+- Use ONLY item IDs that appear in the provided list.
+- The outfit should make stylistic sense (based on tags and type).
+- If a "full" item is used, set top and bottom to null.
+- Do not invent new items or IDs.
+
+Response format:
+Return ONLY a JSON array with a single outfit:
 {
-  "outfit": {
-    "top": "string",
-    "bottom": "string",
-    "full": "string",
-    "shoes": "string"
-  }
-}`
+  "name": "Outfit name",
+  "top": "top_item_id or null",
+  "bottom": "bottom_item_id or null",
+  "full": "full_item_id or null",
+  "shoes": "shoes_item_id"
+}
+
+Important:
+- Do NOT include markdown, explanations, or code fences.
+- The response must be pure JSON.
+`
             }]
           }]
         })
       }
-    );
+    )
+    
+    if (!geminiResponse.ok) {
+      const errorText = await geminiResponse.text()
+      console.error('Gemini API error:', errorText)
+      throw new Error(`Gemini API failed: ${geminiResponse.status}`)
+    }
 
-    if (!geminiResponse.ok) throw new Error('Failed to generate outfits with Gemini');
+    const geminiData = await geminiResponse.json()
+    
+    if (!geminiData.candidates || !geminiData.candidates[0]) {
+      throw new Error('No response from Gemini')
+    }
 
-    const geminiData = await geminiResponse.json();
-    let outfitsText = geminiData.candidates[0].content.parts[0].text;
-
+    let outfitsText = geminiData.candidates[0].content.parts[0].text
+    
+    console.log('Gemini response:', outfitsText)
+    
     // Clean up markdown if present
-    outfitsText = outfitsText.replace(/```json\n?|\n?```/g, '').trim();
-    const outfits = JSON.parse(outfitsText);
+    outfitsText = outfitsText.replace(/```json\n?|\n?```/g, '').trim()
+    let outfits: any;
+    try {
+      outfits = JSON.parse(outfitsText);
+      if (!Array.isArray(outfits)) {
+        // wrap single object in array
+        outfits = [outfits];
+      }
+    } catch (err) {
+      console.error("Failed to parse Gemini output:", outfitsText, err);
+      throw new Error("Invalid Gemini output");
+    }
+     
+    // Validate item IDs exist
+    const validItemIds = new Set(items.map(i => i.id))
+    const validatedOutfits = outfits.filter(outfit => {
+      const hasValidShoes = outfit.shoes && validItemIds.has(outfit.shoes)
+      const hasValidFull = outfit.full && validItemIds.has(outfit.full)
+      const hasValidTopBottom = outfit.top && outfit.bottom && 
+                                 validItemIds.has(outfit.top) && 
+                                 validItemIds.has(outfit.bottom)
+      
+      return hasValidShoes && (hasValidFull || hasValidTopBottom)
+    })
 
-    // Save generated outfit to Supabase
+    if (validatedOutfits.length === 0) {
+      throw new Error('No valid outfits could be generated')
+    }
+    
+    // Save outfits to Supabase
     const { data: savedOutfits, error: saveError } = await supabase
       .from('outfits')
-      .insert([
-        {
-          user_id: userId,
-          name: `Outfit for ${eventType}`,
-          item_ids: Object.values(outfits.outfit).filter(Boolean),
+      .insert(
+        validatedOutfits.map(outfit => ({
+         user_id: userId,
+          name: outfit.name,
+          event_type: eventType,
+          top: outfit.top || null,
+          bottom: outfit.bottom || null,
+          full: outfit.full || null,
+          shoes: outfit.shoes,
           created_at: new Date().toISOString()
-        }
-      ])
-      .select();
-
-    if (saveError) throw saveError;
-
-    return new Response(JSON.stringify({ success: true, outfits: savedOutfits }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    });
+        }))
+      )
+      .select()
+    
+    if (saveError) {
+      console.error('Save error:', saveError)
+      throw saveError
+    }
+    
+    console.log(`Successfully saved ${savedOutfits.length} outfits`)
+    
+    return new Response(
+      JSON.stringify({ success: true, outfits: savedOutfits[0] }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
   } catch (error) {
-    console.error('Error:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 400,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    });
+    console.error('Error:', error)
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { 
+        status: 400, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
+    )
   }
-});
+})

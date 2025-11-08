@@ -21,45 +21,55 @@ export default function GenerateScreen() {
   const handleGenerate = async () => {
     const eventType = selectedOption === "Other" ? otherText : selectedOption;
     if (!eventType.trim()) return;
-
+  
     setIsGenerating(true);
     try {
       // Get current user
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) {
-        Alert.alert("Error", "Please log in to generate outfits");
+      const testUserId = "08a8c5d4-7803-4715-a8ad-a5c09491819b";
+      
+  
+      // Call Supabase Edge Function with eventType
+      const { data, error } = await supabase.functions.invoke('generate-outfit', {
+        body: { 
+          userId: testUserId,
+          eventType: eventType 
+        }
+      });
+  
+      console.log('Full response:', { data, error });
+  
+      if (error) {
+        console.error('Edge Function Error:', error);
+        Alert.alert("Error", error.message || "Failed to generate outfit");
         return;
       }
-
-      // Call Supabase Edge Function
-      const { data, error } = await supabase.functions.invoke('generate-outfit', {
-        body: { userId: user.id }
-      });
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
+  
       if (!data.success || !data.outfits || data.outfits.length === 0) {
         throw new Error("No outfits generated");
       }
-
+  
       // Navigate to generated outfit with first outfit
-      const outfit = data.outfits[0];
-      router.push({
-        pathname: "./generated-outfit",
-        params: {
-          eventType,
-          outfitId: outfit.id,
-          outfitName: outfit.name,
-          description: outfit.description,
-          itemIds: JSON.stringify(outfit.item_ids),
-        },
-      });
+      const outfit = Array.isArray(data.outfits)
+      ? data.outfits[0]
+      : data.outfits; // if it's already a single object
+    
+    router.push({
+      pathname: "./generated-outfit",
+      params: {
+        eventType,
+        outfitId: outfit.id,
+        aiOutfitName: outfit.name,
+        top: outfit.top || "",
+        bottom: outfit.bottom || "",
+        full: outfit.full || "",
+        shoes: outfit.shoes || "",
+      },
+    });
     } catch (err) {
       console.error("Error generating outfit:", err);
       Alert.alert(
-        "Error", "Failed to generate outfit. Please try again."
+        "Error", 
+        "Failed to generate outfit. Please try again."
       );
     } finally {
       setIsGenerating(false);

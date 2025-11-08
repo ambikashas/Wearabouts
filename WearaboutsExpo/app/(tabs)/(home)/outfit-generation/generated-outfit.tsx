@@ -14,9 +14,10 @@ import { getClothingItemUrl } from "@/lib/getClothingItems";
 import { uploadGeneratedOutfit } from "@/lib/uploadOutfits";
 
 export default function GeneratedOutfitScreen() {
-  const { eventType, top, bottom, full, shoes } = useLocalSearchParams();
+  const { eventType, top, bottom, full, shoes, aiOutfitName } = useLocalSearchParams();
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const [outfitName, setOutfitName] = useState("");
+  const aiOutfitNameStr = Array.isArray(aiOutfitName) ? aiOutfitName[0] : aiOutfitName;
+  const [outfitName, setOutfitName] = useState(aiOutfitNameStr || "");
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const confettiRef = useRef(null);
