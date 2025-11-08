@@ -1,17 +1,17 @@
-import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState, useRef } from "react";
+import { getClothingItemUrl } from "@/lib/getClothingItems";
+import { uploadGeneratedOutfit } from "@/lib/uploadOutfits";
+import { useLocalSearchParams } from "expo-router";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Image,
   Modal,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  Image,
 } from "react-native";
 import ConfettiCannon from "react-native-confetti-cannon";
-import { getClothingItemUrl } from "@/lib/getClothingItems";
-import { uploadGeneratedOutfit } from "@/lib/uploadOutfits";
 
 export default function GeneratedOutfitScreen() {
   const { eventType, top, bottom, full, shoes } = useLocalSearchParams();
@@ -119,7 +119,7 @@ export default function GeneratedOutfitScreen() {
             ref={confettiRef}
             count={200}
             origin={{ x: -10, y: 0 }}
-            autoStart={false}
+            autoStart={true}
             fadeOut
             colors={["#FF69B4", "#FFB6C1", "#FFF0F5", "#DB7093"]}
           />
