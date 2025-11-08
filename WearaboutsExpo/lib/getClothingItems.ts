@@ -49,3 +49,4 @@ export async function getClothingItemUrl(id: string) {
 
   return publicUrlData?.publicUrl ?? null;
 }
+

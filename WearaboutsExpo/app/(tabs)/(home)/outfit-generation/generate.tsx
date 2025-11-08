@@ -86,13 +86,6 @@ export default function GenerateScreen() {
       {/* Buttons */}
       <View className="absolute bottom-7 left-5 right-5 flex-row justify-between">
         <TouchableOpacity
-          className="flex-1 py-3 rounded-lg items-center bg-[#FFC0CB] mx-2"
-          onPress={() => router.back()}
-        >
-          <Text className="text-base font-bold text-white">Back</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
           className={`flex-1 py-3 rounded-lg items-center mx-2 ${
             selectedOption || otherText ? "bg-[#FF69B4]" : "bg-[#FFC0CB] opacity-60"
           }`}
