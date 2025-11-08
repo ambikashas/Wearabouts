@@ -1,5 +1,4 @@
 import { render, screen, waitFor } from "@testing-library/react-native";
-import React from "react";
 import { Image } from "react-native";
 import SavedOutfitsScreen from "../app/(tabs)/closet/saved-outfits";
 
@@ -29,22 +28,8 @@ jest.mock("@/lib/supabase", () => ({
 jest.mock("@/lib/getOutfits", () => ({
   getOutfits: jest.fn().mockResolvedValue({
     data: [
-      {
-        id: "1",
-        name: "Test Outfit 1",
-        top: "top1",
-        bottom: "bottom1",
-        shoes: "shoes1",
-        full: null,
-      },
-      {
-        id: "2",
-        name: "Test Outfit 2",
-        top: null,
-        bottom: null,
-        shoes: "shoes2",
-        full: "full2",
-      },
+      { id: "1", name: "Test Outfit 1", top: "top1", bottom: "bottom1", shoes: "shoes1", full: null },
+      { id: "2", name: "Test Outfit 2", top: null, bottom: null, shoes: "shoes2", full: "full2" },
     ],
     hasMore: false,
   }),

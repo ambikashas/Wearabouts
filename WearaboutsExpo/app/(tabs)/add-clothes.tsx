@@ -1,3 +1,5 @@
+import { uploadClothingItem } from "@/lib/uploadClothingItem";
+import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import { useRef, useState } from "react";
 import {
@@ -10,9 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 import ConfettiCannon from "react-native-confetti-cannon";
-import { uploadClothingItem } from "@/lib/uploadClothingItem";
 
 export default function AddClothesScreen() {
   const [imageUris, setImageUris] = useState<string[]>([]);
