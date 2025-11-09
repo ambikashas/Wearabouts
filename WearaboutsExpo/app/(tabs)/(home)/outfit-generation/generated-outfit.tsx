@@ -1,6 +1,6 @@
 import { getClothingItemUrl } from "@/lib/getClothingItems";
 import { uploadGeneratedOutfit } from "@/lib/uploadOutfits";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -31,6 +31,8 @@ export default function GeneratedOutfitScreen() {
     loadImages();
   }, [top, bottom, full, shoes]);
 
+  const router = useRouter();
+
   const handleSave = async () => {
     if (!outfitName.trim()) return;
     setIsSaving(true);
@@ -46,7 +48,10 @@ export default function GeneratedOutfitScreen() {
       });
 
       setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 3000);
+      setTimeout(() => {
+        setShowSuccess(false);
+        router.replace("/");
+      }, 2000);
     } catch (err) {
       console.error("Error saving outfit:", err);
       alert("Failed to save outfit. Check console for details.");
