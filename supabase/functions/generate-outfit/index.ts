@@ -175,32 +175,8 @@ Important:
       throw new Error('No valid outfits could be generated')
     }
     
-    // Save outfits to Supabase
-    const { data: savedOutfits, error: saveError } = await supabase
-      .from('outfits')
-      .insert(
-        validatedOutfits.map(outfit => ({
-         user_id: userId,
-          name: outfit.name,
-          event_type: eventType,
-          top: outfit.top || null,
-          bottom: outfit.bottom || null,
-          full: outfit.full || null,
-          shoes: outfit.shoes,
-          created_at: new Date().toISOString()
-        }))
-      )
-      .select()
-    
-    if (saveError) {
-      console.error('Save error:', saveError)
-      throw saveError
-    }
-    
-    console.log(`Successfully saved ${savedOutfits.length} outfits`)
-    
     return new Response(
-      JSON.stringify({ success: true, outfits: savedOutfits[0] }),
+      JSON.stringify({ success: true, outfits: validatedOutfits[0] }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
