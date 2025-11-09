@@ -36,8 +36,6 @@ export default function GenerateScreen() {
         }
       });
   
-      console.log('Full response:', { data, error });
-  
       if (error) {
         console.error('Edge Function Error:', error);
         Alert.alert("Error", error.message || "Failed to generate outfit");
