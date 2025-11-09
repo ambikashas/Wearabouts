@@ -24,13 +24,34 @@ jest.mock('@/lib/getClothingItems', () => ({
   ]),
 }));
 
-jest.mock('@/lib/outfitGenerator', () => ({
-  generateOutfit: jest.fn((items) => ({
-    top: items.find(i => i.type === 'top'),
-    bottom: items.find(i => i.type === 'bottom'),
+// Mock supabase functions.invoke
+jest.mock('@/lib/supabase', () => ({
+  supabase: {
+    functions: {
+      invoke: jest.fn().mockResolvedValue({
+        data: {
+          success: true,
+          outfits: [
+            { id: 'outfit123', name: 'AI Generated Casual Outfit', top: 'top1', bottom: 'bottom1', shoes: 'shoes1', full: null },
+          ],
+        },
+        error: null,
+      }),
+    },
+  },
+}));
+
+// Mock Outfit Generation AI
+jest.mock('@/lib/uploadOutfits', () => ({
+  uploadGeneratedOutfit: jest.fn().mockResolvedValue({
+    id: 'outfit123',
+    name: 'AI Generated Casual Outfit',
+    event_type: 'casual',
+    top: 'top1',
+    bottom: 'bottom1',
     full: null,
-    shoes: items.find(i => i.type === 'shoes'),
-  })),
+    shoes: 'shoes1',
+  }),
 }));
 
 describe('GenerateScreen', () => {
@@ -54,17 +75,24 @@ describe('GenerateScreen', () => {
 
   it('generates an outfit and pushes route', async () => {
     const { router } = require('expo-router');
+  
     render(<GenerateScreen />);
+  
+    // Select Casual
     fireEvent.press(screen.getByTestId('radio-Casual'));
-    
+  
+    // Press Generate
     await act(async () => {
       fireEvent.press(screen.getByText('Generate'));
     });
-
-    expect(router.push).toHaveBeenCalled();
+  
+    // Wait for navigation to be called
+    await screen.findByText('Generating outfit...').catch(() => null); // optional check
+    expect(router.push).toHaveBeenCalledTimes(1);
     const calledWith = router.push.mock.calls[0][0];
     expect(calledWith.params.top).toBe('top1');
     expect(calledWith.params.bottom).toBe('bottom1');
     expect(calledWith.params.shoes).toBe('shoes1');
   });
+  
 });
