@@ -3,6 +3,7 @@ import { supabase } from "./supabase";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import { decode as atob } from "base-64";
+import * as ImageManipulator from "expo-image-manipulator";
 
 export async function uploadClothingItem(
   uri: string,
@@ -11,14 +12,21 @@ export async function uploadClothingItem(
   type: string
 ) {
   try {
-    // Get file extension
-    let fileExt = uri.split(".").pop()?.split("?")[0] ?? "jpg";
-    if (fileExt === "heic") fileExt = "jpeg";
+    // Convert any image (HEIC, PNG, JPG) → JPEG
+    const manipulated = await ImageManipulator.manipulateAsync(
+      uri,
+      [],
+      { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+    );
+    const finalUri = manipulated.uri;
+
+    // Always set extension to jpg since we converted to JPEG
+    const fileExt = "jpg";
     const fileName = `${uuidv4()}.${fileExt}`;
 
     // Read the file as base64 (use string, not enum)
-    const base64 = await FileSystem.readAsStringAsync(uri, {
-      encoding: "base64", // ← Fixes "undefined" issue
+    const base64 = await FileSystem.readAsStringAsync(finalUri, {
+      encoding: "base64",
     });
 
     // Convert base64 → binary buffer
@@ -26,8 +34,6 @@ export async function uploadClothingItem(
 
     // Determine content type
     let contentType = "image/jpeg";
-    if (fileExt === "png") contentType = "image/png";
-    if (fileExt === "webp") contentType = "image/webp";
 
     // Upload to Supabase Storage
     const { data: uploadData, error: uploadError } = await supabase.storage
