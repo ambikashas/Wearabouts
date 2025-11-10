@@ -55,6 +55,16 @@ export async function uploadClothingItem(
 
     if (dbError) throw dbError;
 
+    // Call Edge Function to analyze image
+    const { data, error } = await supabase.functions.invoke('analyze-image', {
+      body: { 
+        imageUrl: image_url
+      },
+    });
+
+    if (error) throw error;
+    console.log("Vision API response:", data);
+
     return { image_url, fileName };
   } catch (err) {
     console.error("uploadClothingItem error", err);
