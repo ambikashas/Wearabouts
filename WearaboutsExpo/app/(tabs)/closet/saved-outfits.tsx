@@ -41,7 +41,7 @@ export default function SavedOutfitsScreen() {
     <View className="flex-1 p-4">
       <FlatList
         data={outfits}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
         renderItem={renderItem}
         onEndReached={fetchOutfits}
         onEndReachedThreshold={0.5}

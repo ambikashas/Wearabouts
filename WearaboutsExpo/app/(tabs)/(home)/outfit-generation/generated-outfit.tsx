@@ -1,22 +1,23 @@
-import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState, useRef } from "react";
+import { getClothingItemUrl } from "@/lib/getClothingItems";
+import { uploadGeneratedOutfit } from "@/lib/uploadOutfits";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Image,
   Modal,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  Image,
 } from "react-native";
 import ConfettiCannon from "react-native-confetti-cannon";
-import { getClothingItemUrl } from "@/lib/getClothingItems";
-import { uploadGeneratedOutfit } from "@/lib/uploadOutfits";
 
 export default function GeneratedOutfitScreen() {
-  const { eventType, top, bottom, full, shoes } = useLocalSearchParams();
+  const { eventType, top, bottom, full, shoes, aiOutfitName } = useLocalSearchParams();
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const [outfitName, setOutfitName] = useState("");
+  const aiOutfitNameStr = Array.isArray(aiOutfitName) ? aiOutfitName[0] : aiOutfitName;
+  const [outfitName, setOutfitName] = useState(aiOutfitNameStr || "");
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const confettiRef = useRef(null);
@@ -29,6 +30,8 @@ export default function GeneratedOutfitScreen() {
     };
     loadImages();
   }, [top, bottom, full, shoes]);
+
+  const router = useRouter();
 
   const handleSave = async () => {
     if (!outfitName.trim()) return;
@@ -45,7 +48,10 @@ export default function GeneratedOutfitScreen() {
       });
 
       setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 3000);
+      setTimeout(() => {
+        setShowSuccess(false);
+        router.replace("/");
+      }, 2000);
     } catch (err) {
       console.error("Error saving outfit:", err);
       alert("Failed to save outfit. Check console for details.");
@@ -61,6 +67,10 @@ export default function GeneratedOutfitScreen() {
         <Text className="mt-2 text-base text-brandPink">Saving outfit...</Text>
       </View>
     );
+  }
+
+  if (confettiRef.current) {
+    (confettiRef.current as any).start();
   }
 
   return (
@@ -100,13 +110,6 @@ export default function GeneratedOutfitScreen() {
       {/* Buttons */}
       <View className="absolute bottom-7 left-5 right-5 flex-row justify-between">
         <TouchableOpacity
-          className="flex-1 py-3 rounded-lg items-center bg-[#FFC0CB] mx-2"
-          onPress={() => router.push("./generate")}
-        >
-          <Text className="text-base font-semibold text-[#333]">Back</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
           className="flex-1 py-3 rounded-lg items-center bg-[#FF69B4] mx-2"
           onPress={handleSave}
         >
@@ -122,7 +125,7 @@ export default function GeneratedOutfitScreen() {
             ref={confettiRef}
             count={200}
             origin={{ x: -10, y: 0 }}
-            autoStart={false}
+            autoStart={true}
             fadeOut
             colors={["#FF69B4", "#FFB6C1", "#FFF0F5", "#DB7093"]}
           />
