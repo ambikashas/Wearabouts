@@ -1,6 +1,6 @@
 import { getClothingItemUrl } from "@/lib/getClothingItems";
 import { uploadGeneratedOutfit } from "@/lib/uploadOutfits";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -14,9 +14,10 @@ import {
 import ConfettiCannon from "react-native-confetti-cannon";
 
 export default function GeneratedOutfitScreen() {
-  const { eventType, top, bottom, full, shoes } = useLocalSearchParams();
+  const { eventType, top, bottom, full, shoes, aiOutfitName } = useLocalSearchParams();
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const [outfitName, setOutfitName] = useState("");
+  const aiOutfitNameStr = Array.isArray(aiOutfitName) ? aiOutfitName[0] : aiOutfitName;
+  const [outfitName, setOutfitName] = useState(aiOutfitNameStr || "");
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const confettiRef = useRef(null);
@@ -29,6 +30,8 @@ export default function GeneratedOutfitScreen() {
     };
     loadImages();
   }, [top, bottom, full, shoes]);
+
+  const router = useRouter();
 
   const handleSave = async () => {
     if (!outfitName.trim()) return;
@@ -45,7 +48,10 @@ export default function GeneratedOutfitScreen() {
       });
 
       setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 3000);
+      setTimeout(() => {
+        setShowSuccess(false);
+        router.replace("/");
+      }, 2000);
     } catch (err) {
       console.error("Error saving outfit:", err);
       alert("Failed to save outfit. Check console for details.");

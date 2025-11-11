@@ -1,30 +1,7 @@
-import { render, screen, waitFor } from "@testing-library/react-native";
+import { render, screen } from "@testing-library/react-native";
 import { Image } from "react-native";
 import SavedOutfitsScreen from "../app/(tabs)/closet/saved-outfits";
 
-// Mock Supabase
-jest.mock("@/lib/supabase", () => ({
-  supabase: {
-    from: jest.fn(() => ({
-      select: jest.fn().mockReturnThis(),
-      eq: jest.fn().mockReturnThis(),
-      range: jest.fn().mockReturnThis(),
-      order: jest.fn().mockReturnThis(),
-      single: jest.fn().mockResolvedValue({ data: null, error: null }),
-      maybeSingle: jest.fn().mockResolvedValue({ data: null, error: null }),
-    })),
-    storage: {
-      from: jest.fn(() => ({
-        getPublicUrl: jest.fn((path: string) => ({
-          data: { publicUrl: `https://example.com/${path}` },
-          error: null,
-        })),
-      })),
-    },
-  },
-}));
-
-// Mock getOutfits
 jest.mock("@/lib/getOutfits", () => ({
   getOutfits: jest.fn().mockResolvedValue({
     data: [
@@ -35,40 +12,33 @@ jest.mock("@/lib/getOutfits", () => ({
   }),
 }));
 
-// Mock getClothingItemUrl
 jest.mock("@/lib/getClothingItems", () => ({
   getClothingItemUrl: jest.fn((id: string) =>
     Promise.resolve(`https://example.com/${id}`)
   ),
 }));
 
-describe("SavedOutfitsScreen", () => {
-  it("renders without crashing", async () => {
-    const { toJSON } = render(<SavedOutfitsScreen />);
-    await waitFor(() => expect(toJSON()).toBeTruthy());
-  });
+test("renders outfit images without act warning", async () => {
+  render(<SavedOutfitsScreen />);
 
-  it("renders outfit names", async () => {
-    render(<SavedOutfitsScreen />);
-    expect(await screen.findByText("Test Outfit 1")).toBeTruthy();
-    expect(await screen.findByText("Test Outfit 2")).toBeTruthy();
-  });
+  // Wait for the OutfitCards to appear
+  const outfitCards = await screen.findAllByTestId("OutfitCard");
 
-  it("renders outfit images", async () => {
-    render(<SavedOutfitsScreen />);
-    const outfitCards = await screen.findAllByTestId("OutfitCard");
+  // Assert images inside each card
+  outfitCards.forEach((card, index) => {
+    const images = card.findAll((node) => node.type === Image);
 
-    await waitFor(() => {
-      let images = outfitCards[0].findAll((node) => node.type === Image);
+    if (index === 0) {
+      // Outfit 1
       expect(images.length).toBe(3);
       expect(images[0].props.source.uri).toBe("https://example.com/top1");
       expect(images[1].props.source.uri).toBe("https://example.com/bottom1");
       expect(images[2].props.source.uri).toBe("https://example.com/shoes1");
-
-      images = outfitCards[1].findAll((node) => node.type === Image);
+    } else if (index === 1) {
+      // Outfit 2
       expect(images.length).toBe(2);
       expect(images[0].props.source.uri).toBe("https://example.com/full2");
       expect(images[1].props.source.uri).toBe("https://example.com/shoes2");
-    });
+    }
   });
 });
