@@ -9,23 +9,39 @@ export default function SavedOutfitsScreen() {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [refresh, setRefresh] = useState(false);
 
   const PAGE_SIZE = 10;
 
-  // Fetch paginated outfits
-  const fetchOutfits = async () => {
-    if (loading || !hasMore) return;
-    setLoading(true);
+  const fetchOutfits = async (isRefresh = false) => {
+    if (!isRefresh && (!hasMore || loading)) return;
+
+    if (isRefresh) {
+      setRefresh(true);
+      setHasMore(true);
+      setPage(0);
+    } else {
+      setLoading(true);
+    }
 
     try {
-      const { data, hasMore } = await getOutfits(page, PAGE_SIZE);
-      setHasMore(hasMore);
-      setOutfits((prev) => [...prev, ...(data as Outfit[])]);
-      setPage((prev) => prev + 1);
+      const nextPage = isRefresh ? 0 : page;
+      const { data, hasMore: newHasMore } = await getOutfits(
+        nextPage,
+        PAGE_SIZE
+      );
+
+      setHasMore(newHasMore);
+      setOutfits((prev) =>
+        isRefresh ? (data as Outfit[]) : [...prev, ...(data as Outfit[])]
+      );
+
+      setPage(nextPage + 1);
     } catch (err: any) {
       console.error(err);
     } finally {
-      setLoading(false);
+      if (isRefresh) setRefresh(false);
+      else setLoading(false);
     }
   };
 
@@ -43,10 +59,13 @@ export default function SavedOutfitsScreen() {
         data={outfits}
         keyExtractor={(item, index) => `${item.id}-${index}`}
         renderItem={renderItem}
-        onEndReached={fetchOutfits}
+        refreshing={refresh}
+        onRefresh={() => fetchOutfits(true)}
+        onEndReached={() => fetchOutfits(false)}
         onEndReachedThreshold={0.5}
+        showsVerticalScrollIndicator={false}
         ListFooterComponent={
-          loading ? (
+          loading && !refresh ? (
             <ActivityIndicator testID="ActivityIndicator" size="small" />
           ) : null
         }

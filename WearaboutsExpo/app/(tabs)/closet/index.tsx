@@ -1,16 +1,41 @@
-import ImageListHorizontalScrollDisplay from "@/components/ImageListHorizontalScrollDisplay";
+import ImageListHorizontalScrollDisplay, {
+  ImageListRef,
+} from "@/components/ImageListHorizontalScrollDisplay";
 import { allOutfitItemTypes, typeDisplayNames } from "@/types/outfit";
 import { useRouter } from "expo-router";
-import React from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import React, { useRef, useState } from "react";
+import {
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { ChevronRightIcon } from "react-native-heroicons/outline";
 
 export default function ItemsCloset() {
   const router = useRouter();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const listRefs = useRef<Record<string, ImageListRef | null>>({});
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await Promise.all(
+      allOutfitItemTypes.map((type) => listRefs.current[type]?.refresh?.())
+    );
+    setRefreshing(false);
+  };
 
   return (
     <View className="flex-1">
-      <ScrollView showsVerticalScrollIndicator={false} className="pt-2">
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        className="pt-2"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         {allOutfitItemTypes.map((type) => {
           const title = typeDisplayNames[type];
 
@@ -29,13 +54,13 @@ export default function ItemsCloset() {
               </TouchableOpacity>
 
               <ImageListHorizontalScrollDisplay
+                ref={(el) => {
+                  listRefs.current[type] = el;
+                }}
                 type={type}
                 onPressSeeMore={onPressSeeMore}
                 onPressItem={(id: string) =>
-                  router.push({
-                    pathname: "/closet/[id]",
-                    params: { id },
-                  })
+                  router.push({ pathname: "/closet/[id]", params: { id } })
                 }
               />
             </React.Fragment>

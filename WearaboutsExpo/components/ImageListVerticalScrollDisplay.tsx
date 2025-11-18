@@ -1,10 +1,10 @@
 import { getClothingItemsPerType } from "@/lib/getClothingItems";
-import { ClothingItem } from "@/lib/outfitGenerator";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
   Image,
+  RefreshControl,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -18,18 +18,23 @@ export default function ListVerticalScrollDisplay({
   type,
   onPressItem,
 }: Props) {
-  const [data, setData] = useState<ClothingItem[]>([]);
+  const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const LIMIT = 12;
 
   async function fetchItems(reset = false) {
     if (loading || (!hasMore && !reset)) return;
-    setLoading(true);
+
+    if (reset) setRefreshing(true);
+    else setLoading(true);
+
     try {
       const offset = reset ? 0 : page * LIMIT;
       const items = await getClothingItemsPerType(type, offset, LIMIT);
+
       if (reset) {
         setData(items);
         setPage(1);
@@ -43,8 +48,10 @@ export default function ListVerticalScrollDisplay({
       }
     } catch (err) {
       console.error(`Error fetching ${type} items:`, err);
+    } finally {
+      if (reset) setRefreshing(false);
+      else setLoading(false);
     }
-    setLoading(false);
   }
 
   // refetch when the type changes
@@ -72,8 +79,14 @@ export default function ListVerticalScrollDisplay({
       )}
       onEndReached={() => fetchItems(false)}
       onEndReachedThreshold={0.4}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => fetchItems(true)}
+        />
+      }
       ListFooterComponent={
-        loading ? (
+        loading && !refreshing ? (
           <View className="py-4">
             <ActivityIndicator size="small" color="#000" />
           </View>
