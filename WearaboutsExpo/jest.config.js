@@ -17,4 +17,5 @@ module.exports = {
     "^@/components/themed-text$": "<rootDir>/_mocks_/themed-text.tsx",
     "^@/(.*)$": "<rootDir>/$1",
   },
+  setupFiles: ["<rootDir>/jest.setup.js"],
 };

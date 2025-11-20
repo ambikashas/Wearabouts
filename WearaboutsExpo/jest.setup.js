@@ -1,4 +1,11 @@
 import "react-native-gesture-handler/jestSetup";
+import mockAsyncStorage from "@react-native-async-storage/async-storage/jest/async-storage-mock";
+
+jest.mock("@react-native-async-storage/async-storage", () => mockAsyncStorage);
+
+jest.mock("expo-router", () => ({
+  router: { push: jest.fn(), replace: jest.fn() },
+}));
 
 // Mock SafeAreaView and SafeAreaProvider to avoid native errors
 jest.mock("react-native-safe-area-context", () => {
