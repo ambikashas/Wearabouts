@@ -25,15 +25,6 @@ export default function LoginScreen() {
     }
   };
 
-  const handleForgotPassword = async () => {
-    if (!email) return setError("Enter your email first");
-
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
-
-    if (error) setError(error.message);
-    else setSuccess("Check your email to reset password");
-  };
-
   return (
     <View className="flex-1 bg-white px-8 justify-center">
       <Text className="text-4xl font-semibold text-[#35403A] mb-10">
@@ -64,10 +55,6 @@ export default function LoginScreen() {
         className="w-full bg-brandPink py-4 rounded-2xl items-center mb-4"
       >
         <Text className="text-lg text-white font-medium">Login</Text>
-      </Pressable>
-
-      <Pressable onPress={handleForgotPassword} className="mb-4">
-        <Text className="text-center text-blue-500">Forgot Password?</Text>
       </Pressable>
 
       <Pressable onPress={() => router.push("/(auth)/signup")}>
