@@ -144,14 +144,17 @@ export default function ItemPage() {
         </Text>
 
         {/* Tags with Edit Button */}
-        <View className="flex-row items-center mb-6">
-          <Text className="text-gray-400 text-xl mr-2">
+        <View className="flex flex-row items-center mb-6 gap-4 w-full px-4">
+          <Text className="flex-shrink flex-wrap text-gray-400 text-xl">
             {Array.isArray(item?.tags)
               ? item.tags.join(", ")
               : item?.tags || "No tags added"}
           </Text>
-          <TouchableOpacity onPress={handleEditTags}>
-            <PencilIcon size={20} color={brandColors.brandPink} />
+          <TouchableOpacity
+            className="flex justify-center items-center"
+            onPress={handleEditTags}
+          >
+            <PencilIcon size={28} color={brandColors.brandPink} />
           </TouchableOpacity>
         </View>
 
