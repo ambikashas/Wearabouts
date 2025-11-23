@@ -12,7 +12,7 @@ To clone the repository and enter the app directory:
 git clone https://github.com/ambikashas/Wearabouts.git
 cd Wearabouts/WearaboutsExpo
 
-```bash
+```
 
 ```bash
 ## Repository Structure
