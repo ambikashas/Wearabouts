@@ -1,272 +1,215 @@
-# Wearabouts – Developer Documentation
+# Wearabouts – Developer Documentation 
 
-## 1. Obtaining the Source Code
+## Obtaining the Source Code
 
 The Wearabouts source code is publicly available on GitHub:
 
 [https://github.com/ambikashas/Wearabouts](https://github.com/ambikashas/Wearabouts)
 
-To clone the repository locally:
+To clone the repository and enter the app directory:
 
-```
+```bash
 git clone https://github.com/ambikashas/Wearabouts.git
-cd Wearabouts
-```
+cd Wearabouts/WearaboutsExpo
+## Repository Structure
+This project uses a single repository.
+The project root contains documentation, configuration files, and the reports/ folder (for weekly reports).
+The WearaboutsExpo/ folder contains the full React Native (Expo) application.
 
-## Submodules
-
-The project currently uses a single repository that includes both the frontend (React Native app) and backend (Node.js/Express API).
-No external submodules are required.
-
----
-
-## 2. Directory Structure
-```
+Root-Level Structure
+pgsql
+Copy code
 .
-├── coding-guidelines.md
-├── node_modules
-├── package-lock.json
-├── package.json
+├── .gitignore
 ├── README.md
-├── reports
-├── team-resources.md
-└── WearaboutsExpo
-    ├── _mocks_
-    │   ├── themed-text.tsx
-    │   └── themed-view.tsx
-    ├── _tests_
-    │   ├── themed-text.tsx
-    │   └── themed-view.tsx
-    ├── app.json
-    ├── assets
-    │   └── images
-    ├── babel.config.js
-    ├── backend
-    |   ├── [TO BE ADDED]
-    ├── components
-    ├── constants
-    │   └── theme.ts
-    ├── eslint.config.js
-    ├── expo-env.d.ts
-    ├── global.css
-    ├── hooks
-    ├── metro.config.js
-    ├── mock-data
-    │   └── items.ts
-    ├── nativewind-env.d.ts
-    ├── node_modules
-    ├── package-lock.json
-    ├── package.json
-    ├── README.md
-    ├── scripts
-    │   └── reset-project.js
-    ├── tailwind.config.js
-    ├── tests
-    |   ├── [TO BE ADDED]
-    ├── tsconfig.json
-    └── types
-        └── outfit.ts
-```
+├── USER_MANUAL.md
+├── coding-guidelines.md
+├── developer-documentation.md
+├── package.json
+├── package-lock.json
+├── reports/              ← weekly reports only
+└── WearaboutsExpo/       ← MAIN APP DIRECTORY
+WearaboutsExpo Directory Structure
+pgsql
+Copy code
+WearaboutsExpo/
+├── _mocks_
+├── _tests_
+├── app/                  ← main app routes & screens
+├── assets/
+│   └── images/
+├── components/
+├── constants/
+├── lib/                  ← Supabase + AI tagging logic
+├── mock-data/
+├── types/
+├── global.css
+├── app.json
+├── tailwind.config.js
+├── metro.config.js
+├── package.json
+└── tsconfig.json
+Note:
+There is no standalone backend/ directory — backend functionality is handled through Supabase and Google Vision API directly from the app.
 
----
+## Setting Up the Development Environment
+Prerequisites
+Node.js 18+
 
-## 3. Building the Software
-### Prerequisites
+npm or yarn
 
-- Node.js v18+
+Expo CLI
 
-- npm or yarn
+bash
+Copy code
+npm install -g expo-cli
+Supabase project + API keys
 
-- Expo CLI (npm install -g expo-cli)
+Google Vision API key (for clothing tag generation)
 
-- Firebase or MongoDB Atlas credentials
+Installation Steps
+Navigate into the Expo app:
 
-### Setup Steps
+bash
+Copy code
+cd Wearabouts/WearaboutsExpo
+Install dependencies:
 
-1. Install dependencies
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Frontend:
-
-```
-cd app
+bash
+Copy code
 npm install
-```
+Create your environment file:
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Backend:
-```
-cd ../backend
-npm install
-```
-
-2. Set up environment variables
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Copy the example file:
-```
+bash
+Copy code
 cp .env.example .env
-```
+Fill in:
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Update API keys and credentials as needed.
+SUPABASE_URL
 
-3. Start the backend
-```
-cd backend
-npm run dev
-```
+SUPABASE_ANON_KEY
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Runs the API server at http://localhost:4000.
+GOOGLE_VISION_API_KEY
 
-4. Start the frontend
-```
-cd app
+Start the Expo development server:
+
+bash
+Copy code
 npx expo start
-```
+Scan the QR code using Expo Go.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Scan the QR code using the Expo Go app.
+## Testing the Application
+Tests for the project live under:
 
-## 4. Testing the Software
-### Running Tests
+bash
+Copy code
+WearaboutsExpo/_tests/
+Run the test suite:
 
-Each subdirectory (app/ and backend/) has its own test suite.
-
-#### Frontend tests (Jest):
-```
-cd app
+bash
+Copy code
+cd Wearabouts/WearaboutsExpo
 npm test
-```
+Testing Notes
 
-#### Backend tests (Jest or Mocha):
-```
-cd backend
-npm test
-```
+Jest config is already set up (jest.config.js)
 
-All tests must pass before submitting a pull request.
+Uses mocks under _mocks_/
 
-### Test Data and External Dependencies
+All tests must pass before merging into main.
 
-- Test clothing items are stored in backend/tests/data/.
+## Adding New Tests
+Naming Convention
+*.test.tsx
 
-- Mock APIs simulate Firebase and weather endpoints to ensure tests do not depend on live data.
+*.spec.tsx
 
-## 5. Adding New Tests
+Example:
 
-- Naming convention:
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Test files should end with .test.js or .spec.js.
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example:
-```
-app/tests/ClosetScreen.test.js
-backend/tests/outfits.spec.js
-```
-
-- Testing framework:
-
-    - Frontend: Jest + React Native Testing Library
-
-    - Backend: Jest
-
-- Test structure:
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Each test file should include:
-```
+bash
+Copy code
+WearaboutsExpo/_tests_/SavedOutfitsScreen.test.tsx
+Template
+ts
+Copy code
 describe('Feature Name', () => {
-  it('should perform expected behavior', async () => {
+  it('should perform expected behavior', () => {
     // Arrange
     // Act
     // Assert
   });
 });
-```
+## Building a Release
+1. Update the version
+Modify the version in:
 
-- Location:
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Place new tests under app/tests/ or backend/tests/ depending on the feature.
-
-## 6. Building a Release
-
-When preparing a new release:
-
-1. Update the version number
-
-    - Increment version in package.json (semantic versioning: MAJOR.MINOR.PATCH).
-
-    - Example: 1.0.0 → 1.1.0.
-
+bash
+Copy code
+WearaboutsExpo/package.json
 2. Run sanity checks
-```
+bash
+Copy code
 npm run lint
 npm test
-```
+3. Build the mobile bundle
+Using Expo:
 
-3. Build the release
+bash
+Copy code
+npx expo export
+Or for store-ready builds:
 
-- Frontend (Expo build):
-```
-npx expo build:android
-```
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The .apk file will be located in your Expo build output.
-
-- Backend (Production build):
-
-```
-cd backend
-npm run build
-```
-
-4. Verify
-
-    - Confirm both servers start correctly.
-
-    - Ensure all routes return valid responses.
-
-    - Test login, upload, and outfit generation workflows manually.
-
-5. Tag the release
-```
+bash
+Copy code
+eas build
+4. Tag the release
+bash
+Copy code
 git tag -a v1.1.0 -m "Release 1.1.0 – Outfit suggestions update"
 git push origin v1.1.0
-```
-## 7. Contributor Workflow
+## Contributor Workflow
+Create a branch:
 
-1. Create a new branch
-```
-git checkout -b feature/new-feature
-```
+bash
+Copy code
+git checkout -b feature/your-feature
+Commit changes:
 
-2. Make and commit changes
-```
-git commit -m "Add new feature"
-```
+bash
+Copy code
+git commit -m "feat: add new feature"
+Push and open a PR:
 
-3. Push and open a Pull Request
-```
-git push origin feature/new-feature
-```
+bash
+Copy code
+git push origin feature/your-feature
+Wait for code review and CI checks
 
-4. Wait for peer review and CI approval before merging into main.
+## Code Quality Standards
+ESLint + Prettier
 
-All commits must follow Conventional Commit style (e.g., feat: add AI tagging).
+AirBnB style guide
 
-## 8. Code Quality Standards
+React Native components: PascalCase
 
-- Linting: ESLint + Prettier
+Variables/functions: camelCase
 
-- Code style: AirBnB style guide
+Avoid inline styles; prefer StyleSheet or Tailwind classes
 
-- Use PascalCase for React components and camelCase for variables/functions
+Keep code modular and reusable
 
-- Avoid inline styling in React Native; use StyleSheet.create()
+## Pre-Commit Checklist
+Before submitting a PR:
 
-- Keep functions modular and avoid duplication
+All tests pass
 
-## 9. Sanity Checklist Before Submission
+Linting passes (npm run lint)
 
-Before submitting a pull request:
+Expo app launches without errors
 
-- All tests pass (npm test)
-- No ESLint errors (npm run lint)
-- App builds successfully (npx expo start)
-- .env not committed
-- Documentation updated if APIs or features changed
+No .env or secrets committed
+
+Documentation updated if needed
 
 ## Summary
 
