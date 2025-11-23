@@ -1,4 +1,4 @@
-# Wearabouts – Developer Documentation 
+# Wearabouts – Developer Documentation
 
 ## Obtaining the Source Code
 
@@ -11,18 +11,19 @@ To clone the repository and enter the app directory:
 ```bash
 git clone https://github.com/ambikashas/Wearabouts.git
 cd Wearabouts/WearaboutsExpo
-
 ```
 
-```bash
-## Repository Structure
-This project uses a single repository.
-The project root contains documentation, configuration files, and the reports/ folder (for weekly reports).
-The WearaboutsExpo/ folder contains the full React Native (Expo) application.
+---
 
-Root-Level Structure
-pgsql
-Copy code
+## Repository Structure
+
+This project uses a single repository.
+The project root contains documentation, configuration files, and the `reports/` folder (for weekly reports).
+The `WearaboutsExpo/` folder contains the full React Native (Expo) application.
+
+### Root-Level Structure
+
+```
 .
 ├── .gitignore
 ├── README.md
@@ -33,9 +34,11 @@ Copy code
 ├── package-lock.json
 ├── reports/              ← weekly reports only
 └── WearaboutsExpo/       ← MAIN APP DIRECTORY
-WearaboutsExpo Directory Structure
-pgsql
-Copy code
+```
+
+### WearaboutsExpo Directory Structure
+
+```
 WearaboutsExpo/
 ├── _mocks_
 ├── _tests_
@@ -53,89 +56,103 @@ WearaboutsExpo/
 ├── metro.config.js
 ├── package.json
 └── tsconfig.json
-Note:
-There is no standalone backend/ directory — backend functionality is handled through Supabase and Google Vision API directly from the app.
+```
+
+**Note:**
+There is no standalone `backend/` directory — backend functionality is handled through **Supabase** and **Google Vision API** directly from the app.
+
+---
 
 ## Setting Up the Development Environment
-Prerequisites
-Node.js 18+
 
-npm or yarn
+### Prerequisites
 
-Expo CLI
+* Node.js 18+
+* npm or yarn
+* Expo CLI
 
-bash
-Copy code
+```bash
 npm install -g expo-cli
-Supabase project + API keys
+```
 
-Google Vision API key (for clothing tag generation)
+* Supabase project + API keys
+* Google Vision API key (for clothing tag generation)
 
-Installation Steps
+### Installation Steps
+
 Navigate into the Expo app:
 
-bash
-Copy code
+```bash
 cd Wearabouts/WearaboutsExpo
+```
+
 Install dependencies:
 
-bash
-Copy code
+```bash
 npm install
+```
+
 Create your environment file:
 
-bash
-Copy code
+```bash
 cp .env.example .env
+```
+
 Fill in:
 
-SUPABASE_URL
-
-SUPABASE_ANON_KEY
-
-GOOGLE_VISION_API_KEY
+* `SUPABASE_URL`
+* `SUPABASE_ANON_KEY`
+* `GOOGLE_VISION_API_KEY`
 
 Start the Expo development server:
 
-bash
-Copy code
+```bash
 npx expo start
-Scan the QR code using Expo Go.
+```
+
+Scan the QR code using **Expo Go**.
+
+---
 
 ## Testing the Application
+
 Tests for the project live under:
 
-bash
-Copy code
+```
 WearaboutsExpo/_tests/
+```
+
 Run the test suite:
 
-bash
-Copy code
+```bash
 cd Wearabouts/WearaboutsExpo
 npm test
-Testing Notes
+```
 
-Jest config is already set up (jest.config.js)
+**Testing Notes**
 
-Uses mocks under _mocks_/
+* Jest config is already set up (`jest.config.js`)
+* Uses mocks under `_mocks_/`
+* All tests must pass before merging into main.
 
-All tests must pass before merging into main.
+---
 
 ## Adding New Tests
-Naming Convention
-*.test.tsx
 
-*.spec.tsx
+### Naming Convention
+
+* `*.test.tsx`
+* `*.spec.tsx`
 
 Example:
 
-bash
-Copy code
+```bash
 WearaboutsExpo/_tests_/SavedOutfitsScreen.test.tsx
-Template
-ts
-Copy code
+```
+
+### Template
+
+```ts
 describe('Feature Name', () => {
   it('should perform expected behavior', () => {
     // Arrange
@@ -143,86 +160,102 @@ describe('Feature Name', () => {
     // Assert
   });
 });
+```
+
+---
+
 ## Building a Release
-1. Update the version
+
+### 1. Update the version
+
 Modify the version in:
 
-bash
-Copy code
+```
 WearaboutsExpo/package.json
-2. Run sanity checks
-bash
-Copy code
+```
+
+### 2. Run sanity checks
+
+```bash
 npm run lint
 npm test
-3. Build the mobile bundle
+```
+
+### 3. Build the mobile bundle
+
 Using Expo:
 
-bash
-Copy code
+```bash
 npx expo export
+```
+
 Or for store-ready builds:
 
-bash
-Copy code
+```bash
 eas build
-4. Tag the release
-bash
-Copy code
+```
+
+### 4. Tag the release
+
+```bash
 git tag -a v1.1.0 -m "Release 1.1.0 – Outfit suggestions update"
 git push origin v1.1.0
+```
+
+---
+
 ## Contributor Workflow
+
 Create a branch:
 
-bash
-Copy code
+```bash
 git checkout -b feature/your-feature
+```
+
 Commit changes:
 
-bash
-Copy code
+```bash
 git commit -m "feat: add new feature"
+```
+
 Push and open a PR:
 
-bash
-Copy code
+```bash
 git push origin feature/your-feature
-Wait for code review and CI checks
+```
+
+Wait for code review and CI checks.
+
+---
 
 ## Code Quality Standards
-ESLint + Prettier
 
-AirBnB style guide
+* ESLint + Prettier
+* AirBnB style guide
+* React Native components: **PascalCase**
+* Variables/functions: **camelCase**
+* Avoid inline styles; prefer `StyleSheet` or Tailwind classes
+* Keep code modular and reusable
 
-React Native components: PascalCase
-
-Variables/functions: camelCase
-
-Avoid inline styles; prefer StyleSheet or Tailwind classes
-
-Keep code modular and reusable
+---
 
 ## Pre-Commit Checklist
+
 Before submitting a PR:
 
-All tests pass
+* All tests pass
+* Linting passes (`npm run lint`)
+* Expo app launches without errors
+* No `.env` or secrets committed
+* Documentation updated if needed
 
-Linting passes (npm run lint)
-
-Expo app launches without errors
-
-No .env or secrets committed
-
-Documentation updated if needed
+---
 
 ## Summary
 
 These developer guidelines ensure that:
 
-- Any contributor can set up and build the project
-
-- All code changes are tested and reviewed
-
-- Releases are reproducible and version-controlled
-
-- Development remains consistent, secure, and collaborative
+* Any contributor can set up and build the project
+* All code changes are tested and reviewed
+* Releases are reproducible and version-controlled
+* Development remains consistent, secure, and collaborative
