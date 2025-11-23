@@ -11,6 +11,10 @@ To clone the repository and enter the app directory:
 ```bash
 git clone https://github.com/ambikashas/Wearabouts.git
 cd Wearabouts/WearaboutsExpo
+
+```bash
+
+```bash
 ## Repository Structure
 This project uses a single repository.
 The project root contains documentation, configuration files, and the reports/ folder (for weekly reports).
