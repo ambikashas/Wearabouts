@@ -3,6 +3,8 @@ import { getOutfits } from "@/lib/getOutfits";
 import { Outfit } from "@/types/outfit";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { TouchableOpacity } from "react-native";
 
 export default function SavedOutfitsScreen() {
   const [outfits, setOutfits] = useState<Outfit[]>([]);
@@ -78,6 +80,7 @@ export default function SavedOutfitsScreen() {
 function OutfitCard({ outfit }: { outfit: Outfit }) {
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter(); // ← ADD THIS
 
   useEffect(() => {
     const loadImages = async () => {
@@ -91,13 +94,19 @@ function OutfitCard({ outfit }: { outfit: Outfit }) {
       setImages(urls.filter(Boolean) as string[]);
       setLoading(false);
     };
+
     loadImages();
   }, [outfit]);
 
   return (
-    <View testID="OutfitCard" className="bg-white rounded-lg shadow mb-4">
+    <TouchableOpacity
+      testID="OutfitCard"
+      onPress={() => router.push(`/outfit-closet/${outfit.id}`)}  // ← NAVIGATION
+      className="bg-white rounded-lg shadow mb-4"
+    >
       <View className="p-2 px-4 rounded-xl shadow-md shadow-black/10">
         <Text className="mb-2 font-bold text-base">{outfit.name}</Text>
+
         <View className="flex-row justify-start gap-4 mb-3">
           {loading ? (
             <ActivityIndicator size="small" />
@@ -112,6 +121,6 @@ function OutfitCard({ outfit }: { outfit: Outfit }) {
           )}
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
