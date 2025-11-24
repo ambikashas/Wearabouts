@@ -1,12 +1,26 @@
 import { render, screen, waitFor } from "@testing-library/react-native";
 import { Image } from "react-native";
-import SavedOutfitsScreen from "../app/(tabs)/closet/saved-outfits";
+import SavedOutfitsScreen from "../app/(tabs)/outfit-closet";
 
 jest.mock("@/lib/getOutfits", () => ({
   getOutfits: jest.fn().mockResolvedValue({
     data: [
-      { id: "1", name: "Test Outfit 1", top: "top1", bottom: "bottom1", shoes: "shoes1", full: null },
-      { id: "2", name: "Test Outfit 2", top: null, bottom: null, shoes: "shoes2", full: "full2" },
+      {
+        id: "1",
+        name: "Test Outfit 1",
+        top: "top1",
+        bottom: "bottom1",
+        shoes: "shoes1",
+        full: null,
+      },
+      {
+        id: "2",
+        name: "Test Outfit 2",
+        top: null,
+        bottom: null,
+        shoes: "shoes2",
+        full: "full2",
+      },
     ],
     hasMore: false,
   }),
@@ -16,6 +30,14 @@ jest.mock("@/lib/getClothingItems", () => ({
   getClothingItemUrl: jest.fn((id: string) =>
     Promise.resolve(`https://example.com/${id}`)
   ),
+}));
+
+jest.mock("expo-router", () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    back: jest.fn(),
+  }),
 }));
 
 test("renders outfit images without act warning", async () => {

@@ -1,10 +1,11 @@
 import { getClothingItemsPerType } from "@/lib/getClothingItems";
-import { ClothingItem } from "@/lib/outfitGenerator";
-import React, { useEffect, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import React, { useCallback, useRef, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
   Image,
+  RefreshControl,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -18,18 +19,32 @@ export default function ListVerticalScrollDisplay({
   type,
   onPressItem,
 }: Props) {
-  const [data, setData] = useState<ClothingItem[]>([]);
+  const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const LIMIT = 12;
+
+  // Ref tracking the latest fetch to prevent duplicates
+  const currentFetchId = useRef(0);
+  const flatListRef = useRef<FlatList>(null);
 
   async function fetchItems(reset = false) {
     if (loading || (!hasMore && !reset)) return;
-    setLoading(true);
+
+    const fetchId = ++currentFetchId.current; // unique ID for this fetch
+
+    if (reset) setRefreshing(true);
+    else setLoading(true);
+
     try {
       const offset = reset ? 0 : page * LIMIT;
       const items = await getClothingItemsPerType(type, offset, LIMIT);
+
+      // Ignore this fetch if a newer fetch has started
+      if (fetchId !== currentFetchId.current) return;
+
       if (reset) {
         setData(items);
         setPage(1);
@@ -43,21 +58,27 @@ export default function ListVerticalScrollDisplay({
       }
     } catch (err) {
       console.error(`Error fetching ${type} items:`, err);
+    } finally {
+      if (reset) setRefreshing(false);
+      else setLoading(false);
     }
-    setLoading(false);
   }
 
-  // refetch when the type changes
-  useEffect(() => {
-    fetchItems(true);
-  }, [type]);
+  // Refetch when the screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      fetchItems(true);
+      flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
+    }, [type])
+  );
 
   return (
     <FlatList
+      ref={flatListRef}
       data={data}
       numColumns={2}
       className="mb-4"
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item, index) => `${item.id}-${index}`}
       columnWrapperClassName="gap-4 px-4"
       contentContainerClassName="gap-4 py-2"
       renderItem={({ item }) => (
@@ -71,9 +92,15 @@ export default function ListVerticalScrollDisplay({
         </View>
       )}
       onEndReached={() => fetchItems(false)}
-      onEndReachedThreshold={0.4}
+      onEndReachedThreshold={0.2}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => fetchItems(true)}
+        />
+      }
       ListFooterComponent={
-        loading ? (
+        loading && !refreshing ? (
           <View className="py-4">
             <ActivityIndicator size="small" color="#000" />
           </View>

@@ -24,14 +24,15 @@ export default function GenerateScreen() {
   
     setIsGenerating(true);
     try {
-      // Get current user
-      const testUserId = "08a8c5d4-7803-4715-a8ad-a5c09491819b";
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+      if (!user) throw new Error("No logged-in user");
       
   
       // Call Supabase Edge Function with eventType
       const { data, error } = await supabase.functions.invoke('generate-outfit', {
         body: { 
-          userId: testUserId,
+          userId: user.id,
           eventType: eventType 
         }
       });
@@ -51,18 +52,18 @@ export default function GenerateScreen() {
       ? data.outfits[0]
       : data.outfits; // if it's already a single object
     
-    router.push({
-      pathname: "./generated-outfit",
-      params: {
-        eventType,
-        outfitId: outfit.id,
-        aiOutfitName: outfit.name,
-        top: outfit.top || "",
-        bottom: outfit.bottom || "",
-        full: outfit.full || "",
-        shoes: outfit.shoes || "",
-      },
-    });
+      router.push({
+        pathname: "./generated-outfit",
+        params: {
+          eventType,
+          outfitId: outfit.id,
+          aiOutfitName: outfit.name,
+          top: outfit.top || "",
+          bottom: outfit.bottom || "",
+          full: outfit.full || "",
+          shoes: outfit.shoes || "",
+        },
+      });
     } catch (err) {
       console.error("Error generating outfit:", err);
       Alert.alert(

@@ -1,21 +1,21 @@
+import { brandColors } from "@/constants/colors";
+import { editItemTags } from "@/lib/editTags";
+import { removeClothingItem } from "@/lib/removeClothingItem";
+import { supabase } from "@/lib/supabase";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  Image,
   ActivityIndicator,
-  TouchableOpacity,
   Alert,
-  ScrollView,
+  Image,
   Modal,
+  ScrollView,
+  Text,
   TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { supabase } from "@/lib/supabase";
-import { removeClothingItem } from "@/lib/removeClothingItem";
-import { editItemTags } from "@/lib/editTags";
 import { ChevronLeftIcon, PencilIcon } from "react-native-heroicons/outline";
-import { brandColors } from "@/constants/colors";
 
 export default function ItemPage() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -70,7 +70,9 @@ export default function ItemPage() {
       Alert.alert("Not ready", "Item is still loading. Please try again.");
       return;
     }
-    setNewTags(Array.isArray(item.tags) ? item.tags.join(", ") : item.tags || "");
+    setNewTags(
+      Array.isArray(item.tags) ? item.tags.join(", ") : item.tags || ""
+    );
     setIsModalVisible(true);
   };
 
@@ -83,7 +85,7 @@ export default function ItemPage() {
         .filter((t) => t.length > 0);
 
       await editItemTags(id, tagArray);
-      setItem((prev) => (prev ? { ...prev, tags: tagArray } : prev));
+      setItem((prev: any) => (prev ? { ...prev, tags: tagArray } : prev));
       setIsModalVisible(false);
       Alert.alert("Success", "Tags updated successfully.");
     } catch (error) {
@@ -116,7 +118,10 @@ export default function ItemPage() {
         className="flex-row items-center p-3 pt-11"
         style={{ backgroundColor: brandColors.brandPink }}
       >
-        <TouchableOpacity onPress={() => router.back()} className="p-2 rounded-full mr-2 mt-2">
+        <TouchableOpacity
+          onPress={() => router.back()}
+          className="p-2 rounded-full mr-2 mt-2"
+        >
           <ChevronLeftIcon color="white" />
         </TouchableOpacity>
         <Text className="text-2xl font-bold text-white mt-2">Item Details</Text>
@@ -139,14 +144,17 @@ export default function ItemPage() {
         </Text>
 
         {/* Tags with Edit Button */}
-        <View className="flex-row items-center mb-6">
-          <Text className="text-gray-400 text-xl mr-2">
+        <View className="flex flex-row items-center mb-6 gap-4 w-full px-4">
+          <Text className="flex-shrink flex-wrap text-gray-400 text-xl">
             {Array.isArray(item?.tags)
               ? item.tags.join(", ")
               : item?.tags || "No tags added"}
           </Text>
-          <TouchableOpacity onPress={handleEditTags}>
-            <PencilIcon size={20} color={brandColors.brandPink} />
+          <TouchableOpacity
+            className="flex justify-center items-center"
+            onPress={handleEditTags}
+          >
+            <PencilIcon size={28} color={brandColors.brandPink} />
           </TouchableOpacity>
         </View>
 

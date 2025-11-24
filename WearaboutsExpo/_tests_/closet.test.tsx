@@ -19,6 +19,11 @@ jest.mock("@/lib/getClothingItems", () => ({
   getClothingItemsPerType: jest.fn(),
 }));
 
+// --- Mock Search function ---
+jest.mock('@/lib/searchClothingItems', () => ({
+  searchClothingItems: jest.fn(async () => []),
+}));
+
 jest.mock("@/components/ImageListHorizontalScrollDisplay", () => {
   return ({ data }: any) => {
     const { View, Text } = require("react-native");
