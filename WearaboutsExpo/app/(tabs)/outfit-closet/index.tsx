@@ -80,7 +80,7 @@ export default function SavedOutfitsScreen() {
 function OutfitCard({ outfit }: { outfit: Outfit }) {
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter(); // ← ADD THIS
+  const router = useRouter();
 
   useEffect(() => {
     const loadImages = async () => {
@@ -101,7 +101,7 @@ function OutfitCard({ outfit }: { outfit: Outfit }) {
   return (
     <TouchableOpacity
       testID="OutfitCard"
-      onPress={() => router.push(`/outfit-closet/${outfit.id}`)}  // ← NAVIGATION
+      onPress={() => router.push(`/outfit-closet/${outfit.id}`)}
       className="bg-white rounded-lg shadow mb-4"
     >
       <View className="p-2 px-4 rounded-xl shadow-md shadow-black/10">
