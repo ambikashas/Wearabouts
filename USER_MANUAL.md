@@ -103,9 +103,13 @@ To add new items to your closet:
 ---
 
 ### Saved Outfits
-- Open **Saved Outfits** to view your previously saved outfits.
-- Edit or delete saved outfits as needed.
+To view your previously saved outfits:
 
+1. Open **My Closet**.
+2. Click the **caret icon** at the top of the screen to switch to the **Saved Outfits** view.
+3. Browse your saved outfits.
+4. You can **edit** or **delete** any saved outfit as needed.
+   
 ## Known Bugs and Limitations
 Occasionally, AI image recognition may incorrectly tag clothing items (e.g., detecting a sleeve in a picture of a skirt).
 
