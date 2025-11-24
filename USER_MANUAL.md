@@ -27,24 +27,24 @@ Outfit suggestions are powered by **AI**, using **Supabase** and **Google Vision
 ```bash
 git clone https://github.com/ambikashas/Wearabouts.git
 cd Wearabouts/WearaboutsExpo
-2. Install dependencies:
-
 ```
+## 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
-3. Install Expo CLI globally (if not already installed):
+### 3. Install Expo CLI globally (if not already installed):
 
 ```bash
 npm install -g expo-cli
 ```
-4. Create your environment file:
+## 4. Create your environment file:
 
 ```bash
 cp .env.example .env
 ```
-Fill in the following variables:
+## Fill in the following variables:
 
 SUPABASE_URL
 
@@ -52,18 +52,18 @@ SUPABASE_ANON_KEY
 
 GOOGLE_VISION_API_KEY
 
-5. Start the Expo development server:
+## 5. Start the Expo development server:
 
 ```bash
 npx expo start
 ```
-6. Open the app on your device:
+## 6. Open the app on your device:
 
 Scan the QR code displayed in your terminal or browser using the Expo Go app.
 
 You should see the dashboard when the app loads.
 
-3. How to Use the Software
+## How to Use the Software
 Navigation
 Use the bottom tab bar to navigate between:
 
@@ -101,7 +101,7 @@ View previously saved outfits.
 
 Edit or delete saved outfits as needed.
 
-4. Known Bugs and Limitations
+## Known Bugs and Limitations
 Occasionally, AI image recognition may incorrectly tag clothing items (e.g., detecting a sleeve in a picture of a skirt).
 
 Users can edit or remove incorrect tags manually.
@@ -112,7 +112,7 @@ Supabase and Google Vision integration is required for AI functionality.
 
 Certain non-standard clothing types may not be recognized correctly.
 
-5. How to Report a Bug
+## How to Report a Bug
 Please report bugs using the GitHub Issues page for this project:
 👉 https://github.com/ambikashas/Wearabouts/issues
 
@@ -129,7 +129,7 @@ Screenshots or error messages (if applicable)
 For guidance on writing an effective bug report, refer to:
 🔗 How to Write a Good Bug Report
 
-6. Additional Notes
+## Additional Notes
 Always ensure the app is running on the same network as your development machine when using Expo Go.
 
 AI-generated outfit suggestions rely on uploaded clothing images — the more items added, the better the suggestions.
