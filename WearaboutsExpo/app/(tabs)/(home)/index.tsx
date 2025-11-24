@@ -3,10 +3,11 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link } from "expo-router";
-import React from "react";
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import colors from "tailwindcss/colors";
+import { router } from "expo-router";
+import { supabase } from "@/lib/supabase";
 
 export default function HomeScreen() {
   return (
@@ -80,6 +81,17 @@ export default function HomeScreen() {
               </Text>
             </Pressable>
           </Link>
+
+          <Pressable
+            onPress={async () => {
+              await Haptics.selectionAsync();
+              await supabase.auth.signOut();
+              router.replace("/(auth)/logout");
+            }}
+            className="w-full bg-red-500 py-3 rounded-2xl items-center"
+          >
+            <Text className="text-lg text-white font-medium">Logout</Text>
+          </Pressable>
         </View>
       </ScrollView>
       <LinearGradient

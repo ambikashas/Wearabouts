@@ -51,12 +51,17 @@ export async function uploadClothingItem(
       .getPublicUrl(fileName);
     const image_url = publicData.publicUrl;
 
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError) throw userError;
+    if (!user) throw new Error("No logged-in user");
+
     // Insert metadata into "clothing_items"
     const { error: dbError } = await supabase.from("clothing_items").insert({
       name,
       tags,
       type,
-      image_url
+      image_url, 
+      user_id: user.id,
     });
 
     if (dbError) throw dbError;
