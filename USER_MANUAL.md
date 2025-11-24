@@ -29,19 +29,21 @@ git clone https://github.com/ambikashas/Wearabouts.git
 cd Wearabouts/WearaboutsExpo
 2. Install dependencies:
 
-bash
-Copy code
+```
+```bash
 npm install
+```
+
 3. Install Expo CLI globally (if not already installed):
 
-bash
-Copy code
+```bash
 npm install -g expo-cli
+```
 4. Create your environment file:
 
-bash
-Copy code
+```bash
 cp .env.example .env
+```
 Fill in the following variables:
 
 SUPABASE_URL
@@ -52,9 +54,9 @@ GOOGLE_VISION_API_KEY
 
 5. Start the Expo development server:
 
-bash
-Copy code
+```bash
 npx expo start
+```
 6. Open the app on your device:
 
 Scan the QR code displayed in your terminal or browser using the Expo Go app.
