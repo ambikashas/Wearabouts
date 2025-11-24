@@ -64,42 +64,47 @@ Scan the QR code displayed in your terminal or browser using the Expo Go app.
 You should see the dashboard when the app loads.
 
 ## How to Use the Software
-Navigation
-Use the bottom tab bar to navigate between:
 
-Home
+### Navigation
+Use the **bottom tab bar** to navigate between the main sections of the app:
 
-My Closet
-
-Create Outfit
-
-Saved Outfits (new separate page)
+- **Home** – Overview and dashboard
+- **My Closet** – Browse and manage your clothing items
+- **Create Outfit** – Build outfits using your uploaded clothing
+- **Saved Outfits** – View and manage previously saved outfits
 
 Each tab contains screens relevant to its functionality.
 
-Add Clothes
-Add photos of your clothing items using your device’s photo gallery.
+---
 
-Select one or many items to add to your closet.
+### Add Clothes
+To add new items to your closet:
 
-Uploaded clothes appear in My Closet.
+1. Open **My Closet** or use the **Add Clothes** button.
+2. Select photos of your clothing items from your device’s gallery.
+3. You can select **one or multiple items** at a time.
+4. Uploaded clothes will appear in **My Closet**.
 
-View and Manage Your Closet
-Browse uploaded items.
+---
 
-Edit or delete items as needed.
+### View and Manage Your Closet
+- Browse your uploaded items.
+- **Edit** or **delete** items as needed.
+- Correct any AI-generated tags if necessary.
 
-Create Outfits
-Select the type of event you want to build an outfit for: casual, work, party, formal, or other.
+---
 
-The AI model automatically generates an outfit preview.
+### Create Outfits
+1. Go to **Create Outfit**.
+2. Select the type of event for the outfit (e.g., **Casual**, **Work**, **Party**, **Formal**, or **Other**).
+3. The AI model will generate an outfit preview based on your selected clothing.
+4. Review the outfit, give it a **name**, and **save** it.
 
-Review, name, and save the outfit.
+---
 
-Saved Outfits
-View previously saved outfits.
-
-Edit or delete saved outfits as needed.
+### Saved Outfits
+- Open **Saved Outfits** to view your previously saved outfits.
+- Edit or delete saved outfits as needed.
 
 ## Known Bugs and Limitations
 Occasionally, AI image recognition may incorrectly tag clothing items (e.g., detecting a sleeve in a picture of a skirt).
