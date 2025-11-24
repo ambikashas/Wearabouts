@@ -27,6 +27,12 @@ jest.mock('@/lib/getClothingItems', () => ({
 // Mock supabase functions.invoke
 jest.mock('@/lib/supabase', () => ({
   supabase: {
+    auth: {
+      getUser: jest.fn().mockResolvedValue({
+        data: { user: { id: 'test-user-123' } },
+        error: null,
+      }),
+    },
     functions: {
       invoke: jest.fn().mockResolvedValue({
         data: {
@@ -51,6 +57,7 @@ jest.mock('@/lib/uploadOutfits', () => ({
     bottom: 'bottom1',
     full: null,
     shoes: 'shoes1',
+    user_id: "08a8c5d4-7803-4715-a8ad-a5c09491819b",
   }),
 }));
 

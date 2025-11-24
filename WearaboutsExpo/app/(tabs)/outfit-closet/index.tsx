@@ -3,29 +3,47 @@ import { getOutfits } from "@/lib/getOutfits";
 import { Outfit } from "@/types/outfit";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { TouchableOpacity } from "react-native";
 
 export default function SavedOutfitsScreen() {
   const [outfits, setOutfits] = useState<Outfit[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [refresh, setRefresh] = useState(false);
 
   const PAGE_SIZE = 10;
 
-  // Fetch paginated outfits
-  const fetchOutfits = async () => {
-    if (loading || !hasMore) return;
-    setLoading(true);
+  const fetchOutfits = async (isRefresh = false) => {
+    if (!isRefresh && (!hasMore || loading)) return;
+
+    if (isRefresh) {
+      setRefresh(true);
+      setHasMore(true);
+      setPage(0);
+    } else {
+      setLoading(true);
+    }
 
     try {
-      const { data, hasMore } = await getOutfits(page, PAGE_SIZE);
-      setHasMore(hasMore);
-      setOutfits((prev) => [...prev, ...(data as Outfit[])]);
-      setPage((prev) => prev + 1);
+      const nextPage = isRefresh ? 0 : page;
+      const { data, hasMore: newHasMore } = await getOutfits(
+        nextPage,
+        PAGE_SIZE
+      );
+
+      setHasMore(newHasMore);
+      setOutfits((prev) =>
+        isRefresh ? (data as Outfit[]) : [...prev, ...(data as Outfit[])]
+      );
+
+      setPage(nextPage + 1);
     } catch (err: any) {
       console.error(err);
     } finally {
-      setLoading(false);
+      if (isRefresh) setRefresh(false);
+      else setLoading(false);
     }
   };
 
@@ -43,10 +61,13 @@ export default function SavedOutfitsScreen() {
         data={outfits}
         keyExtractor={(item, index) => `${item.id}-${index}`}
         renderItem={renderItem}
-        onEndReached={fetchOutfits}
+        refreshing={refresh}
+        onRefresh={() => fetchOutfits(true)}
+        onEndReached={() => fetchOutfits(false)}
         onEndReachedThreshold={0.5}
+        showsVerticalScrollIndicator={false}
         ListFooterComponent={
-          loading ? (
+          loading && !refresh ? (
             <ActivityIndicator testID="ActivityIndicator" size="small" />
           ) : null
         }
@@ -59,6 +80,7 @@ export default function SavedOutfitsScreen() {
 function OutfitCard({ outfit }: { outfit: Outfit }) {
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const loadImages = async () => {
@@ -72,13 +94,19 @@ function OutfitCard({ outfit }: { outfit: Outfit }) {
       setImages(urls.filter(Boolean) as string[]);
       setLoading(false);
     };
+
     loadImages();
   }, [outfit]);
 
   return (
-    <View testID="OutfitCard" className="bg-white rounded-lg shadow mb-4">
+    <TouchableOpacity
+      testID="OutfitCard"
+      onPress={() => router.push(`/outfit-closet/${outfit.id}`)}
+      className="bg-white rounded-lg shadow mb-4"
+    >
       <View className="p-2 px-4 rounded-xl shadow-md shadow-black/10">
         <Text className="mb-2 font-bold text-base">{outfit.name}</Text>
+
         <View className="flex-row justify-start gap-4 mb-3">
           {loading ? (
             <ActivityIndicator size="small" />
@@ -93,6 +121,6 @@ function OutfitCard({ outfit }: { outfit: Outfit }) {
           )}
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }

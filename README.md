@@ -86,3 +86,30 @@ If something isn’t working as expected, check for environment issues:
 ```bash
 npx expo doctor
 ```
+## How to report and Issue
+**Title:** [Bug] Short description of the issue
+
+**Description:**
+Briefly describe what went wrong and how it affects the app.
+
+**Steps to Reproduce:**
+1. Go to [...]
+2. Tap [...]
+3. Observe [...]
+
+**Expected Behavior:**
+Describe what you expected to happen.
+
+**Actual Behavior:**
+Describe what actually happens instead.
+
+**Environment:**
+- Device: (e.g., iPhone 13 / Samsung S22)
+- OS Version: (e.g., iOS 17.2 / Android 14)
+- Network: (Wi-Fi / Cellular)
+
+**Screenshots or Logs:**
+If applicable, attach images, console errors, or screenshots.
+
+**Additional Notes:**
+Any other context that might help identify the issue.
