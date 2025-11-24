@@ -250,6 +250,35 @@ Before submitting a PR:
 * Documentation updated if needed
 
 ---
+---
+
+## Continuous Integration (CI)
+
+The Wearabouts project uses **GitHub Actions** for continuous integration.
+
+### How CI Works
+- CI is **triggered automatically** whenever a **pull request (PR)** is opened or updated.  
+- Workflows can also be triggered when **issues are created or closed** (if configured).  
+- Typical checks include:
+  - Linting (`npm run lint`)  
+  - Test suite (`npm test`)  
+  - Build checks for the Expo app (optional, if configured)
+
+### Viewing Workflow History
+1. Go to the GitHub repository.  
+2. Click on the **Actions** tab at the top.  
+3. You will see a list of all workflow runs, including PRs and issue-triggered runs.  
+4. Click on a run to view:
+   - Status (passed/failed)  
+   - Detailed logs for each step
+
+### Notes
+- All PRs **must pass CI checks** before merging into `main`.  
+- Failed runs usually indicate either:
+  - Linting issues  
+  - Failing tests  
+  - Build errors
+
 
 ## Summary
 
