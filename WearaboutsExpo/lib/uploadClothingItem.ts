@@ -133,6 +133,17 @@ export async function uploadClothingItem(
 
     console.log("Vision API response:", data);
 
+    // Delete the optimized image from Supabase Storage
+    const { error: deleteError } = await supabase.storage
+      .from("Clothes")
+      .remove([optimizedFileName]);
+
+    if (deleteError) {
+      console.warn("Failed to delete optimized image:", deleteError);
+    } else {
+      console.log("Optimized image deleted successfully");
+    }
+
     return { image_url, fileName };
   } catch (err) {
     console.error("uploadClothingItem error", err);
