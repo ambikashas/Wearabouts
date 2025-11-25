@@ -1,6 +1,7 @@
 import { brandColors } from "@/constants/colors";
 import { Tabs } from "expo-router";
 import React from "react";
+import { Squares2X2Icon } from "react-native-heroicons/outline";
 import {
   HomeIcon,
   PlusCircleIcon,
@@ -41,6 +42,13 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <ShoppingBagIcon size={28} color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="outfit-closet"
+        options={{
+          title: "My Outfits",
+          tabBarIcon: ({ color }) => <Squares2X2Icon size={28} color={color} />,
         }}
       />
     </Tabs>
