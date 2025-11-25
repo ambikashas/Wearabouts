@@ -4,6 +4,7 @@ import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import { decode as atob } from "base-64";
 import * as ImageManipulator from "expo-image-manipulator";
+import { Image } from "react-native";
 
 export async function uploadClothingItem(
   uri: string,
@@ -51,6 +52,60 @@ export async function uploadClothingItem(
       .getPublicUrl(fileName);
     const image_url = publicData.publicUrl;
 
+    const originalSize = await new Promise<{ width: number; height: number }>(
+      (resolve, reject) => {
+        Image.getSize(uri, (width, height) => resolve({ width, height }), reject);
+      }
+    );
+
+    const maxWidth = 640;
+    const maxHeight = 480;
+
+    const widthRatio = maxWidth / originalSize.width;
+    const heightRatio = maxHeight / originalSize.height;
+    const scale = Math.min(widthRatio, heightRatio, 1); // prevents upscaling
+
+    let optimizedUri = finalUri; // default: original if no resize needed
+    let optimizedFileName = fileName.replace(/\.jpg$/, "_optimized.jpg");
+
+    if (scale < 1) {
+      // Image is larger than 640x480 → resize
+      const targetWidth = Math.round(originalSize.width * scale);
+      const targetHeight = Math.round(originalSize.height * scale);
+
+      const optimized = await ImageManipulator.manipulateAsync(
+        finalUri,
+        [{ resize: { width: targetWidth, height: targetHeight } }],
+        { compress: 0.85, format: ImageManipulator.SaveFormat.JPEG }
+      );
+
+      optimizedUri = optimized.uri;
+    }
+
+    // Read optimized image and upload
+    const optimizedBase64 = await FileSystem.readAsStringAsync(optimizedUri, {
+      encoding: "base64",
+    });
+
+    const optimizedBinary = Uint8Array.from(atob(optimizedBase64), (c) =>
+      c.charCodeAt(0)
+    );
+
+    const { error: optimizedUploadError } = await supabase.storage
+      .from("Clothes")
+      .upload(optimizedFileName, optimizedBinary, {
+        contentType: "image/jpeg",
+        upsert: false,
+      });
+
+    if (optimizedUploadError) throw optimizedUploadError;
+
+    const optimized_url = supabase.storage
+      .from("Clothes")
+      .getPublicUrl(optimizedFileName).data.publicUrl;
+
+    console.log("Optimized image URL:", optimized_url);
+
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError) throw userError;
     if (!user) throw new Error("No logged-in user");
@@ -69,12 +124,25 @@ export async function uploadClothingItem(
     // Call Edge Function to analyze image
     const { data, error } = await supabase.functions.invoke('analyze-image', {
       body: { 
-        imageUrl: image_url
+        imageUrl: image_url,
+        optimizedImageUrl: optimized_url
       },
     });
 
     if (error) throw error;
+
     console.log("Vision API response:", data);
+
+    // Delete the optimized image from Supabase Storage
+    const { error: deleteError } = await supabase.storage
+      .from("Clothes")
+      .remove([optimizedFileName]);
+
+    if (deleteError) {
+      console.warn("Failed to delete optimized image:", deleteError);
+    } else {
+      console.log("Optimized image deleted successfully");
+    }
 
     return { image_url, fileName };
   } catch (err) {
