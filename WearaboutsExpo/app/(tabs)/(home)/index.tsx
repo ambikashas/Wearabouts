@@ -3,97 +3,17 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link } from "expo-router";
-import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View, Pressable, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import colors from "tailwindcss/colors";
 import { router } from "expo-router";
 import { supabase } from "@/lib/supabase";
+import WeatherNotification from "@/components/WeatherNotification";
 
 export default function HomeScreen() {
   return (
     <View className="flex-1">
-      <SafeAreaView edges={["top"]} />
-      <ScrollView
-        className="z-10 px-10"
-        contentContainerStyle={{
-          flexGrow: 1,
-          justifyContent: "space-around",
-        }}
-      >
-        {/* Welcome card */}
-        <View className="w-full rounded-2xl overflow-hidden self-center shadow-md shadow-black/10">
-          <Image
-            source={require("@/assets/images/dashboard-bg.jpg")}
-            className="w-full h-[460px] rounded-2xl opacity-70"
-          />
-
-          {/* Overlay */}
-          <View className="absolute inset-0 p-5 justify-between">
-            <Text className="text-[46px] text-[#35403A] font-semibold font-[Georgia] mt-2">
-              Welcome stylist!
-            </Text>
-
-            <Text className="text-right text-[#262E26] text-2xl leading-6 mt-44">
-              passion{"\n"}personalization{"\n"}productivity
-            </Text>
-
-            <View className="flex-row items-center justify-end gap-2">
-              <Ionicons name="shirt-outline" size={28} color="#131C16" />
-              <Text className="text-[38px] text-[#131C16] font-medium text-right shadow-md">
-                Wearabouts
-              </Text>
-            </View>
-
-            {/* Overlay images */}
-            <Image
-              source={require("@/assets/images/pink-dress.png")}
-              className="absolute top-[55%] left-[42%] w-[170px] h-[170px] opacity-75 z-10 rotate-[8deg] -translate-x-[75px] -translate-y-[75px]"
-              resizeMode="contain"
-            />
-            <Image
-              source={require("@/assets/images/blue-dress.png")}
-              className="absolute top-[50%] left-[10%] w-[230px] h-[230px] z-10 rotate-[-11deg] -translate-x-[75px] -translate-y-[75px]"
-              resizeMode="contain"
-            />
-          </View>
-        </View>
-
-        {/* Buttons */}
-        <View className="items-center gap-5">
-          <Link href="/closet" asChild>
-            <Pressable
-              className="w-full bg-brandPink py-4 rounded-2xl items-center shadow-sm shadow-black/10"
-              onPress={() => Haptics.selectionAsync()}
-            >
-              <Text className="text-lg text-white font-medium">
-                ♡ My Closet
-              </Text>
-            </Pressable>
-          </Link>
-
-          <Link href="./outfit-generation/generate" asChild>
-            <Pressable
-              className="w-full bg-brandPink py-4 rounded-2xl items-center shadow-sm shadow-black/10"
-              onPress={() => Haptics.selectionAsync()}
-            >
-              <Text className="text-lg text-white font-medium">
-                ♡ Create outfit
-              </Text>
-            </Pressable>
-          </Link>
-
-          <Pressable
-            onPress={async () => {
-              await Haptics.selectionAsync();
-              await supabase.auth.signOut();
-              router.replace("/(auth)/logout");
-            }}
-            className="w-full bg-red-500 py-3 rounded-2xl items-center"
-          >
-            <Text className="text-lg text-white font-medium">Logout</Text>
-          </Pressable>
-        </View>
-      </ScrollView>
+      {/* Gradient Background */}
       <LinearGradient
         colors={[brandColors.brandPink, colors.white]}
         start={{ x: 0.5, y: 0 }}
@@ -104,8 +24,178 @@ export default function HomeScreen() {
           left: 0,
           right: 0,
           height: "100%",
+          zIndex: -2,
         }}
       />
+
+      <SafeAreaView edges={["top"]} />
+
+      {/* Weather Notification */}
+      <WeatherNotification />
+
+      <ScrollView
+        className="z-10 px-10"
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "flex-start",
+          alignItems: "center",
+          paddingTop: 15,
+        }}
+      >
+        {/* Background Image Container */}
+        <View className="relative mb-10">
+          <Image
+            source={require("@/assets/images/dashboard-bg.jpg")}
+            style={{
+              width: 300,
+              height: 300,
+              borderRadius: 30,
+              opacity: 0.95,
+            }}
+          />
+
+          {/* Heel Icon (top-left, rotated, fully inside) */}
+          <Image
+            source={require("@/assets/images/heel.png")}
+            style={{
+              width: 70,
+              height: 70,
+              position: "absolute",
+              top: 25,
+              left: 25,
+              transform: [{ rotate: "-25deg" }],
+              opacity: 0.9,
+            }}
+            resizeMode="contain"
+          />
+
+          {/* Lips Icon (bottom-right, rotated, visible) */}
+          <Image
+            source={require("@/assets/images/lips.png")}
+            style={{
+              width: 80,
+              height: 80,
+              position: "absolute",
+              bottom: 25,
+              right: 25,
+              transform: [{ rotate: "20deg" }],
+              opacity: 0.9,
+            }}
+            resizeMode="contain"
+          />
+
+          {/* Title Overlay */}
+          <View
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: 0,
+              right: 0,
+              transform: [{ translateY: -36 }],
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: "BodoniModa",
+                fontSize: 38,
+                fontWeight: "900",
+                color: "#800000",
+                textAlign: "center",
+                textShadowColor: "rgba(0,0,0,0.25)",
+                textShadowOffset: { width: 2, height: 2 },
+                textShadowRadius: 4,
+              }}
+            >
+              Welcome stylist!
+            </Text>
+
+            <Text
+              style={{
+                fontFamily: "BodoniModa",
+                fontSize: 38,
+                fontWeight: "900",
+                color: "#800000",
+                textAlign: "center",
+                marginTop: 4,
+                textShadowColor: "rgba(0,0,0,0.25)",
+                textShadowOffset: { width: 2, height: 2 },
+                textShadowRadius: 4,
+              }}
+            >
+              to Wearabouts
+            </Text>
+          </View>
+        </View>
+
+        {/* Buttons */}
+        <View className="items-center w-full" style={{ gap: 12 }}>
+          {/* My Closet */}
+          <Link href="/closet" asChild>
+            <Pressable
+              className="w-full py-5 rounded-3xl items-center bg-pink-200 shadow-md"
+              onPress={() => Haptics.selectionAsync()}
+            >
+              {({ pressed }) => (
+                <Text
+                  style={{
+                    color: "#800000",
+                    fontSize: 18,
+                    fontWeight: "700",
+                    transform: [{ scale: pressed ? 0.97 : 1 }],
+                  }}
+                >
+                  ♡ My Closet
+                </Text>
+              )}
+            </Pressable>
+          </Link>
+
+          {/* Create Outfit */}
+          <Link href="./outfit-generation/generate" asChild>
+            <Pressable
+              className="w-full py-5 rounded-3xl items-center bg-pink-200 shadow-md"
+              onPress={() => Haptics.selectionAsync()}
+            >
+              {({ pressed }) => (
+                <Text
+                  style={{
+                    color: "#800000",
+                    fontSize: 18,
+                    fontWeight: "700",
+                    transform: [{ scale: pressed ? 0.97 : 1 }],
+                  }}
+                >
+                  ♡ Create outfit
+                </Text>
+              )}
+            </Pressable>
+          </Link>
+
+          {/* Logout */}
+          <Pressable
+            onPress={async () => {
+              await Haptics.selectionAsync();
+              await supabase.auth.signOut();
+              router.replace("/(auth)/logout");
+            }}
+            className="w-full py-5 rounded-3xl items-center bg-red-500 shadow-md"
+          >
+            {({ pressed }) => (
+              <Text
+                style={{
+                  color: "#fff",
+                  fontSize: 18,
+                  fontWeight: "700",
+                  transform: [{ scale: pressed ? 0.97 : 1 }],
+                }}
+              >
+                Logout
+              </Text>
+            )}
+          </Pressable>
+        </View>
+      </ScrollView>
     </View>
   );
 }

@@ -2,56 +2,35 @@ import * as FileSystem from "expo-file-system/legacy";
 import { supabase } from "./supabase";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
-import { decode as atob } from "base-64";
 import * as ImageManipulator from "expo-image-manipulator";
 import { Image } from "react-native";
 
+/**
+ * Uploads a clothing item to Supabase, handles optimization, tags via Vision API, 
+ * and cleans up temporary files to prevent memory issues in Expo Go.
+ */
 export async function uploadClothingItem(
   uri: string,
   name: string,
   tags: string[],
   type: string
 ) {
+  let finalUri = uri;
+  let optimizedUri: string | null = null;
+
   try {
-    // Convert any image (HEIC, PNG, JPG) → JPEG
+    // Step 1: Manipulate original image (convert to JPEG, compress)
     const manipulated = await ImageManipulator.manipulateAsync(
       uri,
       [],
       { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
     );
-    const finalUri = manipulated.uri;
+    finalUri = manipulated.uri;
 
-    // Always set extension to jpg since we converted to JPEG
     const fileExt = "jpg";
     const fileName = `${uuidv4()}.${fileExt}`;
 
-    // Read the file as base64 (use string, not enum)
-    const base64 = await FileSystem.readAsStringAsync(finalUri, {
-      encoding: "base64",
-    });
-
-    // Convert base64 → binary buffer
-    const binary = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
-
-    // Determine content type
-    let contentType = "image/jpeg";
-
-    // Upload to Supabase Storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from("Clothes")
-      .upload(fileName, binary, {
-        contentType,
-        upsert: false,
-      });
-
-    if (uploadError) throw uploadError;
-
-    // Get public URL
-    const { data: publicData } = supabase.storage
-      .from("Clothes")
-      .getPublicUrl(fileName);
-    const image_url = publicData.publicUrl;
-
+    // Step 2: Determine optimized size
     const originalSize = await new Promise<{ width: number; height: number }>(
       (resolve, reject) => {
         Image.getSize(uri, (width, height) => resolve({ width, height }), reject);
@@ -60,93 +39,82 @@ export async function uploadClothingItem(
 
     const maxWidth = 640;
     const maxHeight = 480;
-
     const widthRatio = maxWidth / originalSize.width;
     const heightRatio = maxHeight / originalSize.height;
     const scale = Math.min(widthRatio, heightRatio, 1); // prevents upscaling
 
-    let optimizedUri = finalUri; // default: original if no resize needed
     let optimizedFileName = fileName.replace(/\.jpg$/, "_optimized.jpg");
 
     if (scale < 1) {
-      // Image is larger than 640x480 → resize
+      // Resize if needed
       const targetWidth = Math.round(originalSize.width * scale);
       const targetHeight = Math.round(originalSize.height * scale);
-
       const optimized = await ImageManipulator.manipulateAsync(
         finalUri,
         [{ resize: { width: targetWidth, height: targetHeight } }],
         { compress: 0.85, format: ImageManipulator.SaveFormat.JPEG }
       );
-
       optimizedUri = optimized.uri;
     }
 
-    // Read optimized image and upload
-    const optimizedBase64 = await FileSystem.readAsStringAsync(optimizedUri, {
-      encoding: "base64",
-    });
-
-    const optimizedBinary = Uint8Array.from(atob(optimizedBase64), (c) =>
-      c.charCodeAt(0)
-    );
-
-    const { error: optimizedUploadError } = await supabase.storage
+    // Step 3: Upload original and optimized images directly from file URIs
+    const { error: originalError } = await supabase.storage
       .from("Clothes")
-      .upload(optimizedFileName, optimizedBinary, {
-        contentType: "image/jpeg",
-        upsert: false,
-      });
+      .upload(fileName, { uri: finalUri, type: "image/jpeg" }, { upsert: false });
+    if (originalError) throw originalError;
 
-    if (optimizedUploadError) throw optimizedUploadError;
+    let optimized_url: string | null = null;
+    if (optimizedUri) {
+      const { error: optimizedError } = await supabase.storage
+        .from("Clothes")
+        .upload(optimizedFileName, { uri: optimizedUri, type: "image/jpeg" }, { upsert: false });
+      if (optimizedError) throw optimizedError;
 
-    const optimized_url = supabase.storage
+      optimized_url = supabase.storage
+        .from("Clothes")
+        .getPublicUrl(optimizedFileName).data.publicUrl;
+    }
+
+    const image_url = supabase.storage
       .from("Clothes")
-      .getPublicUrl(optimizedFileName).data.publicUrl;
+      .getPublicUrl(fileName).data.publicUrl;
 
     console.log("Optimized image URL:", optimized_url);
 
+    // Step 4: Get user
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError) throw userError;
     if (!user) throw new Error("No logged-in user");
 
-    // Insert metadata into "clothing_items"
+    // Step 5: Insert metadata into DB
     const { error: dbError } = await supabase.from("clothing_items").insert({
       name,
       tags,
       type,
-      image_url, 
+      image_url,
       user_id: user.id,
     });
-
     if (dbError) throw dbError;
 
-    // Call Edge Function to analyze image
-    const { data, error } = await supabase.functions.invoke('analyze-image', {
-      body: { 
-        imageUrl: image_url,
-        optimizedImageUrl: optimized_url
-      },
+    // Step 6: Call Vision API Edge Function
+    const { data, error: visionError } = await supabase.functions.invoke("analyze-image", {
+      body: { imageUrl: image_url, optimizedImageUrl: optimized_url },
     });
-
-    if (error) throw error;
+    if (visionError) throw visionError;
 
     console.log("Vision API response:", data);
 
-    // Delete the optimized image from Supabase Storage
-    const { error: deleteError } = await supabase.storage
-      .from("Clothes")
-      .remove([optimizedFileName]);
-
-    if (deleteError) {
-      console.warn("Failed to delete optimized image:", deleteError);
-    } else {
-      console.log("Optimized image deleted successfully");
-    }
-
-    return { image_url, fileName };
+    return { image_url, optimized_url, fileName, optimizedFileName };
   } catch (err) {
     console.error("uploadClothingItem error", err);
     throw err;
+  } finally {
+    // Step 7: Delete temporary files immediately
+    try {
+      if (finalUri) await FileSystem.deleteAsync(finalUri, { idempotent: true });
+      if (optimizedUri && optimizedUri !== finalUri) await FileSystem.deleteAsync(optimizedUri, { idempotent: true });
+    } catch (delErr) {
+      console.warn("Failed to delete temporary files:", delErr);
+    }
   }
 }
