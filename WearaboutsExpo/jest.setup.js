@@ -40,4 +40,4 @@ jest.mock("expo-linear-gradient", () => {
   return {
     LinearGradient: (props) => React.createElement("LinearGradient", props, props.children),
   };
-}));
+});
