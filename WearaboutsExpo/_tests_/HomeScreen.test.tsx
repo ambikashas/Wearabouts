@@ -51,9 +51,8 @@ describe('HomeScreen', () => {
 
   it('renders the subtitle words', () => {
     render(<HomeScreen />);
-    expect(screen.getByText(/passion/i)).toBeTruthy();
-    expect(screen.getByText(/personalization/i)).toBeTruthy();
-    expect(screen.getByText(/productivity/i)).toBeTruthy();
+    expect(screen.getByText(/welcome stylist/i)).toBeTruthy();
+expect(screen.getByText(/to wearabouts/i)).toBeTruthy();
   });
 
   it('renders the brand name Wearabouts', () => {

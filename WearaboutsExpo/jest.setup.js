@@ -1,9 +1,11 @@
 // jest.setup.js
 
 import "react-native-gesture-handler/jestSetup";
-import mockAsyncStorage from "@react-native-async-storage/async-storage/jest/async-storage-mock";
 
-jest.mock("@react-native-async-storage/async-storage", () => mockAsyncStorage);
+// Use require inside the mock factory to avoid referencing out-of-scope variables
+jest.mock("@react-native-async-storage/async-storage", () =>
+  require("@react-native-async-storage/async-storage/jest/async-storage-mock")
+);
 
 jest.mock("expo-router", () => ({
   router: { push: jest.fn(), replace: jest.fn() },
@@ -11,7 +13,6 @@ jest.mock("expo-router", () => ({
 
 // Mock SafeAreaView and SafeAreaProvider to avoid native errors
 jest.mock("react-native-safe-area-context", () => {
-  const React = require("react");
   return {
     SafeAreaView: ({ children }) => children,
     SafeAreaProvider: ({ children }) => children,
@@ -36,8 +37,6 @@ jest.mock("expo-location", () => ({
 
 // ---- MOCK EXPO LINEAR GRADIENT ----
 jest.mock("expo-linear-gradient", () => {
-  const React = require("react");
-  return {
-    LinearGradient: (props) => React.createElement("LinearGradient", props, props.children),
-  };
+  const LinearGradient = ({ children }) => children;
+  return { LinearGradient };
 });

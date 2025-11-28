@@ -95,6 +95,7 @@ export default function LoginScreen() {
 
           {/* Login Button */}
           <Pressable
+            testID="login-button"
             onPress={handleLogin}
             className="w-full py-4 rounded-2xl items-center justify-center mb-4 bg-pink-200 shadow-lg"
           >
