@@ -26,10 +26,14 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
     console.log('Supabase client created');
 
-    // 3. Parse image URL from request body
-    const { imageUrl } = await req.json();
-    if (!imageUrl ) throw new Error("imageUrl is required");
+    // 3. Parse image URLs from request body
+    const { imageUrl, optimizedImageUrl } = await req.json();
+
+    if (!imageUrl) throw new Error("imageUrl is required");
+    if (!optimizedImageUrl) throw new Error("optimizedImageUrl is required");
+
     console.log('Image URL received:', imageUrl);
+    console.log('Optimized Image URL received:', optimizedImageUrl);
 
 
     // 4. Call Google Vision API
@@ -41,8 +45,8 @@ serve(async (req) => {
         body: JSON.stringify({
           requests: [
             {
-              image: { source: { imageUri: imageUrl } },
-              features: [{ type: "LABEL_DETECTION", maxResults: 10 }],
+              image: { source: { imageUri: optimizedImageUrl } },
+              features: [{ type: "LABEL_DETECTION", maxResults: 15 }],
             },
           ],
         }),
