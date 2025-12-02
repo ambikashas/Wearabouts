@@ -71,6 +71,19 @@ serve(async (req) => {
       fulls: fulls.length
     })
     
+    // Shuffle items to introduce randomness
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+    
+    shuffle(tops);
+    shuffle(bottoms);
+    shuffle(shoes);
+    shuffle(fulls);
+
     // Format items for Gemini
     const itemsDescription = {
       tops: tops.map(i => ({ id: i.id, name: i.name, tags: i.tags })),
@@ -78,6 +91,12 @@ serve(async (req) => {
       shoes: shoes.map(i => ({ id: i.id, name: i.name, tags: i.tags })),
       fulls: fulls.map(i => ({ id: i.id, name: i.name, tags: i.tags }))
     }
+
+    // Introduce noise to vary outputs
+    const noise1 = crypto.randomUUID()
+    const noise2 = Math.random()
+    const noise3 = crypto.getRandomValues(new Uint32Array(1))[0]
+    
     
     // Call Gemini API
     console.log('Calling Gemini API...')
@@ -88,26 +107,37 @@ serve(async (req) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          generationConfig: {
+            temperature: 1.8,
+            topK: 40,
+            topP: 0.95
+          },
           contents: [{
             parts: [{
 text: `
 You are a professional fashion stylist.
 The user is attending an event of type: "${eventType}".
+Randomization tokens:
+- ${noise1}
+- ${noise2}
+- ${noise3}
+
 Given these clothing items (as JSON): ${JSON.stringify(itemsDescription)}
 
 Your task: Create exactly ONE complete outfit suggestion.
 
-Rules:
-- Create output based on the eventType. For example, for "formal event", 
-suggest elegant items; for "casual outing", suggest relaxed styles.
-- Each outfit must include either:
-  (1) a top + bottom + shoes, OR
-  (2) a full outfit item (like a dress) + shoes.
-- Never include both (top/bottom) and (full) in the same outfit.
-- Use ONLY item IDs that appear in the provided list.
-- The outfit should make stylistic sense (based on tags and type).
-- If a "full" item is used, set top and bottom to null.
-- Do not invent new items or IDs.
+Hard rules:
+- The outfit MUST be different from past outputs. 
+- Even if eventType and clothing items are identical, you MUST rotate which items are chosen.
+- Do NOT pick the same combination of item IDs unless no other valid combination exists.
+- Randomize your selection to avoid repetition.
+
+Outfit rules:
+- Must be (top + bottom + shoes) OR (full + shoes).
+- Never mix full with top/bottom.
+- Use ONLY the provided IDs.
+- If using a full item, top and bottom = null.
+- Basic style coherence required.
 
 Response format:
 Return ONLY a JSON array with a single outfit:
