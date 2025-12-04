@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 import ConfettiCannon from "react-native-confetti-cannon";
+import { useRouter } from "expo-router";
 
 export default function AddClothesScreen() {
   const [imageUris, setImageUris] = useState<string[]>([]);
@@ -23,6 +24,7 @@ export default function AddClothesScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const confettiRef = useRef(null);
+  const router = useRouter();
 
   const pickImages = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -49,8 +51,11 @@ export default function AddClothesScreen() {
     try {
       const tagsArray = tags.split(",").map((t) => t.trim()).filter(Boolean);
 
+      let createdItemId = null;
+
       for (const uri of imageUris) {
-        await uploadClothingItem(uri, itemName || "Unnamed", tagsArray, type);
+        const { id } = await uploadClothingItem(uri, itemName || "Unnamed", tagsArray, type);
+        if (!createdItemId) createdItemId = id; // store ID of first created item
       }
 
       setImageUris([]);
@@ -59,7 +64,12 @@ export default function AddClothesScreen() {
       setType("");
       setShowSuccess(true);
 
-      setTimeout(() => setShowSuccess(false), 3000);
+      setTimeout(() => {
+        setShowSuccess(false);
+        if (createdItemId) {
+          router.push(`/closet/${createdItemId}`); 
+        }
+      }, 2500);
     } catch (err) {
       console.error("Upload failed:", err);
       alert("Upload failed — see console for details");
