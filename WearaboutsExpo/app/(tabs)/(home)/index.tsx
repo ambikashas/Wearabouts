@@ -1,21 +1,19 @@
 import { brandColors } from "@/constants/colors";
+import { supabase } from "@/lib/supabase";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
-import { Link } from "expo-router";
+import * as Location from "expo-location";
+import { Link, router } from "expo-router";
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import colors from "tailwindcss/colors";
-import { router } from "expo-router";
-import { supabase } from "@/lib/supabase";
-import * as Location from "expo-location";
-import { Alert } from "react-native";
 
 
 export default function HomeScreen() {
   return (
     <View className="flex-1">
-       <LinearGradient
+      <LinearGradient
         colors={[brandColors.brandPink, colors.white]}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
@@ -75,7 +73,6 @@ export default function HomeScreen() {
 
         {/* Buttons */}
         <View className="items-center gap-5">
-          // --- Notifications Button (replaces My Closet button) ---
           <Pressable
             onPress={async () => {
               await Haptics.selectionAsync();
