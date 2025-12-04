@@ -15,6 +15,18 @@ import { Alert } from "react-native";
 export default function HomeScreen() {
   return (
     <View className="flex-1">
+       <LinearGradient
+        colors={[brandColors.brandPink, colors.white]}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 1 }}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "100%",
+        }}
+      />
       <SafeAreaView edges={["top"]} />
       <ScrollView
         className="z-10 px-10"
@@ -27,12 +39,12 @@ export default function HomeScreen() {
         <View className="w-full rounded-2xl overflow-hidden self-center shadow-md shadow-black/10">
           <Image
             source={require("@/assets/images/dashboard-bg.jpg")}
-            className="w-full h-[460px] rounded-2xl opacity-70"
+            className="w-full h-[440px] rounded-2xl opacity-70"
           />
 
           {/* Overlay */}
           <View className="absolute inset-0 p-5 justify-between">
-            <Text className="text-[46px] text-[#35403A] font-semibold font-[Georgia] mt-2">
+            <Text className="text-[38px] text-[#35403A] font-semibold font-[Georgia] mt-2">
               Welcome stylist!
             </Text>
 
@@ -55,7 +67,7 @@ export default function HomeScreen() {
             />
             <Image
               source={require("@/assets/images/blue-dress.png")}
-              className="absolute top-[50%] left-[10%] w-[230px] h-[230px] z-10 rotate-[-11deg] -translate-x-[75px] -translate-y-[75px]"
+              className="absolute top-[45%] left-[10%] w-[230px] h-[230px] z-10 rotate-[-11deg] -translate-x-[75px] -translate-y-[75px]"
               resizeMode="contain"
             />
           </View>
@@ -100,7 +112,7 @@ export default function HomeScreen() {
             />
 
             <Text style={{ color: "#0a4030" }} className="text-lg font-medium">
-              Enable Notifications
+              Enable weather alert here
             </Text>
           </Pressable>
 
@@ -128,18 +140,7 @@ export default function HomeScreen() {
           </Pressable>
         </View>
       </ScrollView>
-      <LinearGradient
-        colors={[brandColors.brandPink, colors.white]}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: "100%",
-        }}
-      />
+     
     </View>
   );
 }
