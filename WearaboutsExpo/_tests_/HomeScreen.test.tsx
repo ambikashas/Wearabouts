@@ -63,19 +63,17 @@ describe('HomeScreen', () => {
 
   it('renders both buttons', () => {
     render(<HomeScreen />);
-    expect(screen.getByText(/My Closet/i)).toBeTruthy();
     expect(screen.getByText(/Create outfit/i)).toBeTruthy();
   });
 
   it('calls Haptics.selectionAsync when pressing buttons', () => {
     render(<HomeScreen />);
-    const closetButton = screen.getByText(/My Closet/i);
     const outfitButton = screen.getByText(/Create outfit/i);
 
-    fireEvent.press(closetButton);
+    
     fireEvent.press(outfitButton);
 
-    expect(Haptics.selectionAsync).toHaveBeenCalledTimes(2);
+    expect(Haptics.selectionAsync).toHaveBeenCalledTimes(1);
 
   });
 

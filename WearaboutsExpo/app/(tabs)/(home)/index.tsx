@@ -8,6 +8,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import colors from "tailwindcss/colors";
 import { router } from "expo-router";
 import { supabase } from "@/lib/supabase";
+import * as Location from "expo-location";
+import { Alert } from "react-native";
+
 
 export default function HomeScreen() {
   return (
@@ -60,17 +63,47 @@ export default function HomeScreen() {
 
         {/* Buttons */}
         <View className="items-center gap-5">
-          <Link href="/closet" asChild>
-            <Pressable
-              className="w-full bg-brandPink py-4 rounded-2xl items-center shadow-sm shadow-black/10"
-              onPress={() => Haptics.selectionAsync()}
-            >
-              <Text style={{ color: "#0a4030" }} className="text-lg font-medium">
-                ♡ My Closet
-              </Text>
+          // --- Notifications Button (replaces My Closet button) ---
+          <Pressable
+            onPress={async () => {
+              await Haptics.selectionAsync();
 
-            </Pressable>
-          </Link>
+              // Request location permission
+              const { status } = await Location.requestForegroundPermissionsAsync();
+              if (status !== "granted") {
+                alert("Permission denied. Unable to show weather alerts.");
+                return;
+              }
+
+              // Get user location
+              const loc = await Location.getCurrentPositionAsync({});
+              const lat = loc.coords.latitude;
+              const lon = loc.coords.longitude;
+
+              // Fetch weather
+              const WEATHER_KEY = process.env.EXPO_PUBLIC_WEATHER_API_KEY;
+
+              const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_KEY}`;
+
+              const response = await fetch(url);
+              const weather = await response.json();
+              const weatherType = weather.weather?.[0]?.main ?? "the weather";
+
+              alert(`Hey, watch out for ${weatherType} today!`);
+            }}
+            className="w-full flex-row items-center bg-brandPink py-4 rounded-2xl px-4 shadow-sm shadow-black/10"
+          >
+            <Image
+              source={require("@/assets/images/anne_hathaway.png")}
+              className="w-12 h-12 rounded-full mr-3"
+              resizeMode="cover"
+            />
+
+            <Text style={{ color: "#0a4030" }} className="text-lg font-medium">
+              Enable Notifications
+            </Text>
+          </Pressable>
+
 
           <Link href="./outfit-generation/generate" asChild>
             <Pressable

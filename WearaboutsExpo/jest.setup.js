@@ -16,3 +16,12 @@ jest.mock("react-native-safe-area-context", () => {
     useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
   };
 });
+// Mock Expo Location (prevents native errors in tests)
+jest.mock("expo-location", () => ({
+  requestForegroundPermissionsAsync: jest.fn(async () => ({
+    status: "granted",
+  })),
+  getCurrentPositionAsync: jest.fn(async () => ({
+    coords: { latitude: 0, longitude: 0 },
+  })),
+}));
