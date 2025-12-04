@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import { ChevronLeftIcon } from "react-native-heroicons/outline";
+import GradientBackground from "@/components/GradientBackground";
 
 // Helper: Convert clothing item ID → image_url
 async function getImageUrl(id: string) {
@@ -103,54 +104,57 @@ export default function OutfitPage() {
           <Text className="text-gray-600 text-lg">Outfit not found.</Text>
         </View>
       ) : (
-        <View className="flex-1 bg-white">
-          {/* Pink Header Bar */}
-          <View
-            className="flex-row items-center p-3 pt-3"
-            style={{ backgroundColor: brandColors.brandPink }}
-          >
-            <TouchableOpacity
-              onPress={() => router.back()}
-              className="p-2 rounded-full mr-2"
-            >
-              <ChevronLeftIcon color="white" />
-            </TouchableOpacity>
-            <Text className="text-2xl font-bold text-white">
-              Outfit Details
-            </Text>
-          </View>
-
-          {/* Main Content */}
-          <ScrollView
-            contentContainerStyle={{
-              alignItems: "center",
-              paddingVertical: 10,
-            }}
-            showsVerticalScrollIndicator={false}
-          >
-            <Text className="text-3xl font-bold mb-4 mt-4">{outfit.name}</Text>
-
-            {/* Display actual image URLs */}
-            {images.map((url, i) => (
-              <Image
-                key={i}
-                source={{ uri: url }}
-                className="w-52 h-52 rounded-2xl mb-6 shadow-sm"
-                resizeMode="cover"
-              />
-            ))}
-
-            <TouchableOpacity
-                onPress={handleDelete}
-                activeOpacity={0.7}
+        <GradientBackground>
+            <View className="flex-1 bg-transparent">
+            {/* Pink Header Bar */}
+            <View
+                className="flex-row items-center p-3 pt-3"
                 style={{ backgroundColor: brandColors.brandPink }}
-                className="px-11 py-4 rounded-xl shadow-sm mb-16"
             >
-                <Text className="text-white font-semibold text-xl">Delete Outfit</Text>
-            </TouchableOpacity>
+                <TouchableOpacity
+                onPress={() => router.back()}
+                className="p-2 rounded-full mr-2"
+                >
+                <ChevronLeftIcon color="white" />
+                </TouchableOpacity>
+                <Text className="text-2xl font-bold text-white">
+                Outfit Details
+                </Text>
+            </View>
 
-          </ScrollView>
-        </View>
+            {/* Main Content */}
+            <ScrollView
+                className="bg-transparent"
+                contentContainerStyle={{
+                alignItems: "center",
+                paddingVertical: 10,
+                }}
+                showsVerticalScrollIndicator={false}
+            >
+                <Text className="text-3xl font-bold mb-4 mt-4">{outfit.name}</Text>
+
+                {/* Display actual image URLs */}
+                {images.map((url, i) => (
+                <Image
+                    key={i}
+                    source={{ uri: url }}
+                    className="w-52 h-52 rounded-2xl mb-6 shadow-sm"
+                    resizeMode="cover"
+                />
+                ))}
+
+                <TouchableOpacity
+                    onPress={handleDelete}
+                    activeOpacity={0.7}
+                    style={{ backgroundColor: brandColors.brandPink }}
+                    className="px-11 py-4 rounded-xl shadow-sm mb-16"
+                >
+                    <Text className="text-white font-semibold text-xl">Delete Outfit</Text>
+                </TouchableOpacity>
+
+            </ScrollView>
+            </View>
+        </GradientBackground>
       )}
     </>
   );

@@ -65,9 +65,10 @@ export default function HomeScreen() {
               className="w-full bg-brandPink py-4 rounded-2xl items-center shadow-sm shadow-black/10"
               onPress={() => Haptics.selectionAsync()}
             >
-              <Text className="text-lg text-white font-medium">
+              <Text style={{ color: "#0a4030" }} className="text-lg font-medium">
                 ♡ My Closet
               </Text>
+
             </Pressable>
           </Link>
 
@@ -76,7 +77,7 @@ export default function HomeScreen() {
               className="w-full bg-brandPink py-4 rounded-2xl items-center shadow-sm shadow-black/10"
               onPress={() => Haptics.selectionAsync()}
             >
-              <Text className="text-lg text-white font-medium">
+              <Text style={{ color: "#0a4030" }} className="text-lg font-medium">
                 ♡ Create outfit
               </Text>
             </Pressable>
@@ -88,7 +89,7 @@ export default function HomeScreen() {
               await supabase.auth.signOut();
               router.replace("/(auth)/logout");
             }}
-            className="w-full bg-red-500 py-3 rounded-2xl items-center"
+            className="w-full bg-red-500 py-3 rounded-2xl items-center shadow-sm shadow-black/10"
           >
             <Text className="text-lg text-white font-medium">Logout</Text>
           </Pressable>

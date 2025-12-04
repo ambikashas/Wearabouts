@@ -5,6 +5,7 @@ import React, { useRef, useState } from "react";
 import { RefreshControl, ScrollView, Text, TouchableOpacity, View, TextInput } from "react-native";
 import { ChevronRightIcon } from "react-native-heroicons/outline";
 import { searchClothingItems } from "@/lib/searchClothingItems";
+import GradientBackground from "@/components/GradientBackground";
 
 function SearchBar({
   value,
@@ -50,7 +51,7 @@ export default function ItemsCloset() {
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [searchResults, setSearchResults] = useState<any[] | null>(null); // null = not searched yet
+  const [searchResults, setSearchResults] = useState<any[] | null>(null);
   const [searching, setSearching] = useState(false);
 
   const listRefs = useRef<Record<string, ImageListRef | null>>({});
@@ -63,26 +64,27 @@ export default function ItemsCloset() {
 
   const handleSearch = async () => {
     if (!searchText.trim()) {
-      setSearchResults(null); // no search yet
+      setSearchResults(null);
       return;
     }
 
     setSearching(true);
     const results = await searchClothingItems(searchText);
-    setSearchResults(results); // empty array if nothing found
+    setSearchResults(results);
     setSearching(false);
   };
 
   const handleClearSearch = () => {
     setSearchText("");
-    setSearchResults(null); // back to normal list
+    setSearchResults(null);
   };
 
   return (
-    <View className="flex-1">
+    <GradientBackground>
       <ScrollView
         showsVerticalScrollIndicator={false}
         className="pt-2"
+        contentContainerStyle={{ paddingBottom: 60 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         <SearchBar
@@ -99,7 +101,9 @@ export default function ItemsCloset() {
                 <TouchableOpacity
                   key={item.id}
                   className="gap-2 flex flex-row p-2 px-4 items-center"
-                  onPress={() => router.push({ pathname: "/closet/[id]", params: { id: item.id } })}
+                  onPress={() =>
+                    router.push({ pathname: "/closet/[id]", params: { id: item.id } })
+                  }
                 >
                   <Text className="text-xl">{item.name}</Text>
                 </TouchableOpacity>
@@ -137,6 +141,6 @@ export default function ItemsCloset() {
               );
             })}
       </ScrollView>
-    </View>
+    </GradientBackground>
   );
 }

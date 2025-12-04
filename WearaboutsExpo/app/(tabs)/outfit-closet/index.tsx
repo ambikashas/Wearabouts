@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { TouchableOpacity } from "react-native";
+import GradientBackground from "@/components/GradientBackground";
 
 export default function SavedOutfitsScreen() {
   const [outfits, setOutfits] = useState<Outfit[]>([]);
@@ -56,24 +57,26 @@ export default function SavedOutfitsScreen() {
   );
 
   return (
-    <View className="flex-1 p-4">
-      <FlatList
-        data={outfits}
-        keyExtractor={(item, index) => `${item.id}-${index}`}
-        renderItem={renderItem}
-        refreshing={refresh}
-        onRefresh={() => fetchOutfits(true)}
-        onEndReached={() => fetchOutfits(false)}
-        onEndReachedThreshold={0.5}
-        showsVerticalScrollIndicator={false}
-        ListFooterComponent={
-          loading && !refresh ? (
-            <ActivityIndicator testID="ActivityIndicator" size="small" />
-          ) : null
-        }
-        contentContainerStyle={{ paddingHorizontal: 8, paddingBottom: 16 }}
-      />
-    </View>
+    <GradientBackground>
+      <View className="flex-1 p-4 bg-transparent">
+        <FlatList
+          data={outfits}
+          keyExtractor={(item, index) => `${item.id}-${index}`}
+          renderItem={renderItem}
+          refreshing={refresh}
+          onRefresh={() => fetchOutfits(true)}
+          onEndReached={() => fetchOutfits(false)}
+          onEndReachedThreshold={0.5}
+          showsVerticalScrollIndicator={false}
+          ListFooterComponent={
+            loading && !refresh ? (
+              <ActivityIndicator testID="ActivityIndicator" size="small" />
+            ) : null
+          }
+          contentContainerStyle={{ paddingHorizontal: 8, paddingBottom: 16 }}
+        />
+      </View>
+    </GradientBackground>
   );
 }
 
