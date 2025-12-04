@@ -4,6 +4,8 @@ import { removeClothingItem } from "@/lib/removeClothingItem";
 import { supabase } from "@/lib/supabase";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
+import GradientBackground from "@/components/GradientBackground";
+
 import {
   ActivityIndicator,
   Alert,
@@ -112,94 +114,97 @@ export default function ItemPage() {
   }
 
   return (
-    <View className="flex-1 bg-white">
-      {/* Pink Header Bar */}
-      <View
-        className="flex-row items-center p-3 pt-11"
-        style={{ backgroundColor: brandColors.brandPink }}
-      >
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="p-2 rounded-full mr-2 mt-2"
+    <GradientBackground>
+      <View className="flex-1 bg-transparent">
+        {/* Pink Header Bar */}
+        <View
+          className="flex-row items-center p-3 pt-11"
+          style={{ backgroundColor: brandColors.brandPink }}
         >
-          <ChevronLeftIcon color="white" />
-        </TouchableOpacity>
-        <Text className="text-2xl font-bold text-white mt-2">Item Details</Text>
-      </View>
-
-      {/* Main Content */}
-      <ScrollView
-        contentContainerStyle={{ alignItems: "center", paddingVertical: 20 }}
-        showsVerticalScrollIndicator={false}
-      >
-        <Image
-          source={{ uri: item.image_url }}
-          className="w-72 h-72 rounded-2xl mb-6 shadow-sm"
-          resizeMode="cover"
-        />
-
-        <Text className="text-3xl font-bold mb-2">{item.name}</Text>
-        <Text className="text-gray-600 text-2xl mb-1 capitalize">
-          {item.type}
-        </Text>
-
-        {/* Tags with Edit Button */}
-        <View className="flex flex-row items-center mb-6 gap-4 w-full px-4">
-          <Text className="flex-shrink flex-wrap text-gray-400 text-xl">
-            {Array.isArray(item?.tags)
-              ? item.tags.join(", ")
-              : item?.tags || "No tags added"}
-          </Text>
           <TouchableOpacity
-            className="flex justify-center items-center"
-            onPress={handleEditTags}
+            onPress={() => router.back()}
+            className="p-2 rounded-full mr-2 mt-2"
           >
-            <PencilIcon size={28} color={brandColors.brandPink} />
+            <ChevronLeftIcon color="white" />
           </TouchableOpacity>
+          <Text className="text-2xl font-bold text-white mt-2">Item Details</Text>
         </View>
 
-        {/* Delete Button */}
-        <TouchableOpacity
-          onPress={handleDelete}
-          activeOpacity={0.7}
-          style={{ backgroundColor: brandColors.brandPink }}
-          className="px-11 py-4 rounded-xl shadow-sm"
+        {/* Main Content */}
+        <ScrollView
+          className="bg-transparent"
+          contentContainerStyle={{ alignItems: "center", paddingVertical: 20 }}
+          showsVerticalScrollIndicator={false}
         >
-          <Text className="text-white font-semibold text-xl">Delete Item</Text>
-        </TouchableOpacity>
-      </ScrollView>
+          <Image
+            source={{ uri: item.image_url }}
+            className="w-96 h-[450px] rounded-2xl mb-6 shadow-sm"
+            resizeMode="cover"
+          />
 
-      {/* Edit Tags Modal */}
-      <Modal visible={isModalVisible} transparent animationType="fade">
-        <View className="flex-1 justify-center items-center bg-black/50">
-          <View className="bg-white p-6 rounded-2xl w-80 shadow-lg">
-            <Text className="text-xl font-semibold mb-3 text-center">
-              Edit Tags
+          <Text className="text-3xl font-bold mb-2">{item.name}</Text>
+          <Text className="text-gray-600 text-2xl mb-1 capitalize">
+            {item.type}
+          </Text>
+
+          {/* Tags with Edit Button */}
+          <View className="flex flex-row items-center justify-center mb-6 gap-4 w-full px-4">
+
+            <Text className="flex-shrink flex-wrap text-gray-600 text-xl">
+              {Array.isArray(item?.tags)
+                ? item.tags.join(", ")
+                : item?.tags || "No tags added"}
             </Text>
-            <TextInput
-              value={newTags}
-              onChangeText={setNewTags}
-              placeholder="Enter tags separated by commas"
-              className="border border-gray-300 rounded-lg p-3 mb-4 text-gray-700"
-            />
-            <View className="flex-row justify-between">
-              <TouchableOpacity
-                onPress={() => setIsModalVisible(false)}
-                className="px-4 py-2 rounded-lg bg-gray-200"
-              >
-                <Text className="text-gray-700 font-semibold">Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleSaveTags}
-                className="px-4 py-2 rounded-lg"
-                style={{ backgroundColor: brandColors.brandPink }}
-              >
-                <Text className="text-white font-semibold">Save</Text>
-              </TouchableOpacity>
+            <TouchableOpacity
+              className="flex justify-center items-center"
+              onPress={handleEditTags}
+            >
+              <PencilIcon size={28} color={brandColors.textGreen} />
+            </TouchableOpacity>
+          </View>
+
+          {/* Delete Button */}
+          <TouchableOpacity
+            onPress={handleDelete}
+            activeOpacity={0.7}
+            className="px-11 py-4 rounded-xl shadow-sm bg-red-500"
+          >
+            <Text className="text-white font-semibold text-xl">Delete Item</Text>
+          </TouchableOpacity>
+        </ScrollView>
+
+        {/* Edit Tags Modal */}
+        <Modal visible={isModalVisible} transparent animationType="fade">
+          <View className="flex-1 justify-center items-center bg-black/50">
+            <View className="bg-white p-6 rounded-2xl w-80 shadow-lg">
+              <Text className="text-xl font-semibold mb-3 text-center">
+                Edit Tags
+              </Text>
+              <TextInput
+                value={newTags}
+                onChangeText={setNewTags}
+                placeholder="Enter tags separated by commas"
+                className="border border-gray-300 rounded-lg p-3 mb-4 text-gray-700"
+              />
+              <View className="flex-row justify-between">
+                <TouchableOpacity
+                  onPress={() => setIsModalVisible(false)}
+                  className="px-4 py-2 rounded-lg bg-gray-200"
+                >
+                  <Text className="text-gray-700 font-semibold">Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleSaveTags}
+                  className="px-4 py-2 rounded-lg"
+                  style={{ backgroundColor: brandColors.brandPink }}
+                >
+                  <Text className="text-white font-semibold">Save</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
-    </View>
+        </Modal>
+      </View>
+    </GradientBackground>
   );
 }

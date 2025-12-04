@@ -1,3 +1,4 @@
+import GradientBackground from "@/components/GradientBackground";
 import { uploadClothingItem } from "@/lib/uploadClothingItem";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
@@ -13,15 +14,17 @@ import {
   View,
 } from "react-native";
 import ConfettiCannon from "react-native-confetti-cannon";
+import { useRouter } from "expo-router";
 
 export default function AddClothesScreen() {
   const [imageUris, setImageUris] = useState<string[]>([]);
   const [itemName, setItemName] = useState("");
   const [tags, setTags] = useState("");
-  const [type, setType] = useState<"top" | "bottom" | "full" | "shoes" | "">(""); // ← NEW
+  const [type, setType] = useState<"top" | "bottom" | "full" | "shoes" | "">("");
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const confettiRef = useRef(null);
+  const router = useRouter();
 
   const pickImages = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -48,8 +51,11 @@ export default function AddClothesScreen() {
     try {
       const tagsArray = tags.split(",").map((t) => t.trim()).filter(Boolean);
 
+      let createdItemId = null;
+
       for (const uri of imageUris) {
-        await uploadClothingItem(uri, itemName || "Unnamed", tagsArray, type); // ← send type
+        const { id } = await uploadClothingItem(uri, itemName || "Unnamed", tagsArray, type);
+        if (!createdItemId) createdItemId = id; // store ID of first created item
       }
 
       setImageUris([]);
@@ -58,10 +64,12 @@ export default function AddClothesScreen() {
       setType("");
       setShowSuccess(true);
 
-      // removed invalid start() call — confetti auto-starts when mounted
-      // (confettiRef.current as any)?.start();
-
-      setTimeout(() => setShowSuccess(false), 3000);
+      setTimeout(() => {
+        setShowSuccess(false);
+        if (createdItemId) {
+          router.push(`/closet/${createdItemId}`); 
+        }
+      }, 2500);
     } catch (err) {
       console.error("Upload failed:", err);
       alert("Upload failed — see console for details");
@@ -72,57 +80,63 @@ export default function AddClothesScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 justify-center items-center p-4">
-        <ActivityIndicator size="large" color="#FF69B4" />
-        <Text className="mt-2 text-base text-brandPink">Uploading...</Text>
-      </View>
+      <GradientBackground>
+        <View className="flex-1 justify-center items-center p-4 bg-transparent">
+          <ActivityIndicator size="large" color="#FF69B4" />
+          <Text className="mt-2 text-base text-brandPink">Uploading...</Text>
+        </View>
+      </GradientBackground>
     );
   }
 
   return (
-    <View className="flex-1 p-4">
-      {/* Upload Area */}
-      <TouchableOpacity
-        activeOpacity={0.7}
-        className="w-full mb-4 rounded-2xl bg-brandPink justify-center items-center p-8 shadow-sm shadow-black/10"
-        onPress={pickImages}
+    <GradientBackground>
+      <ScrollView
+        className="flex-1 bg-transparent"
+        contentContainerStyle={{ padding: 16, paddingBottom: 60 }}
+        showsVerticalScrollIndicator={false}
       >
-        <Text className="text-base text-white">Tap to upload images</Text>
-      </TouchableOpacity>
-
-      {/* Item Name Input */}
-      <TextInput
-        placeholder="Item name"
-        value={itemName}
-        onChangeText={setItemName}
-        className="border border-gray-300 rounded-lg p-3 mb-3 text-base bg-white"
-      />
-
-      {/* Tags Input */}
-      <TextInput
-        placeholder="Tags (comma-separated)"
-        value={tags}
-        onChangeText={setTags}
-        className="border border-gray-300 rounded-lg p-3 mb-4 text-base bg-white"
-      />
-
-      {/* Type Dropdown */}
-      <View className="border border-gray-300 rounded-lg mb-4 bg-white">
-        <Picker
-          testID="picker-type"
-          selectedValue={type}
-          onValueChange={(value) => setType(value)}
+        {/* Upload Area */}
+        <TouchableOpacity
+          activeOpacity={0.7}
+          className="w-full mb-4 rounded-2xl bg-brandPink justify-center items-center p-8 shadow-sm shadow-black/10"
+          onPress={pickImages}
         >
-          <Picker.Item label="Select Type..." value="" />
-          <Picker.Item label="Top" value="top" />
-          <Picker.Item label="Bottom" value="bottom" />
-          <Picker.Item label="Full (dress, jumpsuit, etc.)" value="full" />
-          <Picker.Item label="Shoes" value="shoes" />
-        </Picker>
-      </View>
+          <Text className="text-base text-textGreen">Tap to upload images</Text>
+        </TouchableOpacity>
 
-      {/* Selected Images */}
-      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Item Name Input */}
+        <TextInput
+          placeholder="Item name"
+          value={itemName}
+          onChangeText={setItemName}
+          className="border border-gray-300 rounded-lg p-3 mb-3 text-base bg-white"
+        />
+
+        {/* Tags Input */}
+        <TextInput
+          placeholder="Tags (comma-separated)"
+          value={tags}
+          onChangeText={setTags}
+          className="border border-gray-300 rounded-lg p-3 mb-4 text-base bg-white"
+        />
+
+        {/* Type Dropdown */}
+        <View className="border border-gray-300 rounded-lg mb-4 bg-white">
+          <Picker
+            testID="picker-type"
+            selectedValue={type}
+            onValueChange={(value) => setType(value)}
+          >
+            <Picker.Item label="Select Type..." value="" />
+            <Picker.Item label="Top" value="top" />
+            <Picker.Item label="Bottom" value="bottom" />
+            <Picker.Item label="Full (dress, jumpsuit, etc.)" value="full" />
+            <Picker.Item label="Shoes" value="shoes" />
+          </Picker>
+        </View>
+
+        {/* Selected Images */}
         <View className="flex flex-row flex-wrap">
           {imageUris.map((uri, index) => (
             <View key={index} className="relative p-1 w-1/4">
@@ -137,42 +151,42 @@ export default function AddClothesScreen() {
             </View>
           ))}
         </View>
-      </ScrollView>
 
-      {/* Upload Button */}
-      <View className="items-center pt-4">
-        <TouchableOpacity
-          activeOpacity={0.7}
-          className={`w-[150px] py-3 rounded-lg items-center ${
-            imageUris.length === 0 || isLoading || !type
-              ? "bg-brandPink"
-              : "bg-[#FF69B4]"
-          }`}
-          disabled={imageUris.length === 0 || isLoading || !type}
-          onPress={handleUpload}
-        >
-          <Text className="text-white font-bold text-base">Upload</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Success Modal */}
-      <Modal transparent={true} visible={showSuccess} animationType="fade">
-        <View className="flex-1 bg-black/40 justify-center items-center">
-          <Text className="text-2xl font-bold text-white text-center mb-2">
-            Added to your closet!
-          </Text>
-          {showSuccess && (
-            <ConfettiCannon
-              ref={confettiRef}
-              count={200}
-              origin={{ x: -10, y: 0 }}
-              autoStart={true}        // <-- changed from false to true
-              fadeOut
-              colors={["#FF69B4", "#FFB6C1", "#FFF0F5", "#DB7093"]}
-            />
-          )}
+        {/* Upload Button */}
+        <View className="items-center pt-4">
+          <TouchableOpacity
+            activeOpacity={0.7}
+            className={`w-[150px] py-3 rounded-lg items-center ${
+              imageUris.length === 0 || isLoading || !type
+                ? "bg-brandPink"
+                : "bg-[#FF69B4]"
+            }`}
+            disabled={imageUris.length === 0 || isLoading || !type}
+            onPress={handleUpload}
+          >
+            <Text className="text-textGreen font-bold text-base">Upload</Text>
+          </TouchableOpacity>
         </View>
-      </Modal>
-    </View>
+
+        {/* Success Modal */}
+        <Modal transparent={true} visible={showSuccess} animationType="fade">
+          <View className="flex-1 bg-black/40 justify-center items-center">
+            <Text className="text-2xl font-bold text-white text-center mb-2">
+              Added to your closet!
+            </Text>
+            {showSuccess && (
+              <ConfettiCannon
+                ref={confettiRef}
+                count={200}
+                origin={{ x: -10, y: 0 }}
+                autoStart={true}
+                fadeOut
+                colors={["#FF69B4", "#FFB6C1", "#FFF0F5", "#DB7093"]}
+              />
+            )}
+          </View>
+        </Modal>
+      </ScrollView>
+    </GradientBackground>
   );
 }
