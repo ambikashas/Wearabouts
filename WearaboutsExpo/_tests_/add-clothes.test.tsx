@@ -13,12 +13,24 @@ jest.mock("expo-image-picker", () => ({
   MediaTypeOptions: { Images: "Images" },
 }));
 
-// 🧩 Mock ConfettiCannon (native module)
+// Mock ConfettiCannon (native module)
 jest.mock("react-native-confetti-cannon", () => jest.fn().mockImplementation(() => null));
 
-// 🧩 Mock uploadClothingItem so we don’t hit Supabase during test
+// Mock uploadClothingItem so we don’t hit Supabase during test
 jest.mock("@/lib/uploadClothingItem", () => ({
   uploadClothingItem: jest.fn(() => Promise.resolve({ image_url: "https://mock.url", fileName: "mock.jpg" })),
+}));
+
+// Mock expo-router
+jest.mock("expo-router", () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    back: jest.fn(),
+  }),
+  useNavigation: () => ({
+    setOptions: jest.fn(),
+  }),
 }));
 
 jest.useFakeTimers();
