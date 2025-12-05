@@ -1,7 +1,6 @@
-import React from "react";
-import { render, fireEvent, waitFor, screen } from "@testing-library/react-native";
 import LoginScreen from "@/app/(auth)/login";
 import { supabase } from "@/lib/supabase";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 import { router } from "expo-router";
 
 jest.mock("@/lib/supabase", () => ({
@@ -17,13 +16,17 @@ jest.mock("expo-router", () => ({
 describe("LoginScreen", () => {
   beforeEach(() => jest.clearAllMocks());
 
+  function getLoginButton() {
+    return screen.getByTestId("login-button");
+  }
+
   it("shows error if login fails", async () => {
     supabase.auth.signInWithPassword.mockResolvedValue({ data: null, error: { message: "Invalid credentials" } });
     render(<LoginScreen />);
 
     fireEvent.changeText(screen.getByPlaceholderText("Email"), "test@example.com");
     fireEvent.changeText(screen.getByPlaceholderText("Password"), "wrongpassword");
-    fireEvent.press(screen.getByText("Login"));
+    fireEvent.press(getLoginButton());
 
     await waitFor(() => expect(screen.getByText("Invalid credentials")).toBeTruthy());
 
@@ -35,7 +38,7 @@ describe("LoginScreen", () => {
 
     fireEvent.changeText(screen.getByPlaceholderText("Email"), "test@example.com");
     fireEvent.changeText(screen.getByPlaceholderText("Password"), "password123");
-    fireEvent.press(screen.getByText("Login"));
+    fireEvent.press(getLoginButton());
 
     await waitFor(() => expect(router.replace).toHaveBeenCalledWith("/"));
 
