@@ -66,7 +66,7 @@ describe("AddClothesScreen", () => {
 
     // Pick image
     await act(async () => {
-      fireEvent.press(screen.getByText("Tap to upload images"));
+      fireEvent.press(screen.getByText("Tap to upload an image"));
       await Promise.resolve();
     });
 
@@ -90,7 +90,7 @@ describe("AddClothesScreen", () => {
 
     // Pick image
     await act(async () => {
-      fireEvent.press(getByText("Tap to upload images"));
+      fireEvent.press(getByText("Tap to upload an image"));
       await Promise.resolve();
     });
 
