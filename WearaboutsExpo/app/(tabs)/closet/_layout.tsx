@@ -7,7 +7,7 @@ export default function ClosetLayout() {
     <Stack
       screenOptions={{
         headerStyle: { backgroundColor: brandColors.brandPink },
-        headerTintColor: colors.white,
+        headerTintColor: brandColors.textGreen,
         headerTitleAlign: "center",
         title: "My Closet",
         headerBackButtonDisplayMode: "minimal",

@@ -95,10 +95,12 @@ export default function OutfitPage() {
       <Stack.Screen options={{ headerShown: false }} />
 
       {loading ? (
-        <View className="flex-1 justify-center items-center bg-white">
+        <GradientBackground>
+        <View className="flex-1 justify-center items-center bg-transparent">
           <ActivityIndicator size="large" color={brandColors.brandPink} />
           <Text className="mt-2 text-gray-600">Loading outfit...</Text>
         </View>
+        </GradientBackground>
       ) : !outfit ? (
         <View className="flex-1 justify-center items-center bg-white">
           <Text className="text-gray-600 text-lg">Outfit not found.</Text>
@@ -108,16 +110,16 @@ export default function OutfitPage() {
             <View className="flex-1 bg-transparent">
             {/* Pink Header Bar */}
             <View
-                className="flex-row items-center p-3 pt-3"
+                className="flex-row items-center p-3 pt-3 border-b-2 border-white border-dashed"
                 style={{ backgroundColor: brandColors.brandPink }}
             >
                 <TouchableOpacity
                 onPress={() => router.back()}
                 className="p-2 rounded-full mr-2"
                 >
-                <ChevronLeftIcon color="white" />
+                <ChevronLeftIcon color={brandColors.textGreen} />
                 </TouchableOpacity>
-                <Text className="text-2xl font-bold text-white">
+                <Text className="text-2xl font-bold text-textGreen">
                 Outfit Details
                 </Text>
             </View>
@@ -146,8 +148,7 @@ export default function OutfitPage() {
                 <TouchableOpacity
                     onPress={handleDelete}
                     activeOpacity={0.7}
-                    style={{ backgroundColor: brandColors.brandPink }}
-                    className="px-11 py-4 rounded-xl shadow-sm mb-16"
+                    className="px-11 py-4 rounded-xl shadow-sm bg-red-500 border-white border-dashed border-2"
                 >
                     <Text className="text-white font-semibold text-xl">Delete Outfit</Text>
                 </TouchableOpacity>

@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import ConfettiCannon from "react-native-confetti-cannon";
+import GradientBackground from "@/components/GradientBackground";
 
 export default function GeneratedOutfitScreen() {
   const { eventType, top, bottom, full, shoes, aiOutfitName } = useLocalSearchParams();
@@ -74,63 +75,64 @@ export default function GeneratedOutfitScreen() {
   }
 
   return (
-    <View className="flex-1 p-5">
-      <Text className="text-2xl font-bold text-brandPink text-center mt-10">
-        Event Summary
-      </Text>
-      <Text className="text-base text-brandPink mt-4 text-center">
-        Event Type: {eventType || "—"}
-      </Text>
+    <GradientBackground>
+      <View className="flex-1 p-5">
+        <Text className="text-3xl font-bold text-textGreen text-center mt-4">
+          Outfit Created:
+        </Text>
+        <Text className="text-2xl text-textGreen mt-4 text-center">
+          Event Type: {eventType || "—"}
+        </Text>
 
-      {/* Outfit Preview */}
-      <View className="flex-row justify-center flex-wrap mt-6">
-        {imageUrls.length === 0 ? (
-          <ActivityIndicator size="small" />
-        ) : (
-          imageUrls.map((uri, i) => (
-            <Image
-              key={i}
-              source={{ uri }}
-              className="w-28 h-28 rounded-lg mx-2 mb-2 bg-[#EEE]"
-              resizeMode="cover"
-            />
-          ))
-        )}
-      </View>
-
-
-      <TextInput
-        className="border border-[#FFB6C1] rounded-lg p-3 text-base bg-[#FFF0F5] text-[#333] mt-5"
-        placeholder="Name your outfit"
-        placeholderTextColor="#666"
-        onChangeText={setOutfitName}
-        value={outfitName}
-      />
-
-      {/* Buttons */}
-      <View className="absolute bottom-7 left-5 right-5 flex-row justify-between">
-        <TouchableOpacity
-          className="flex-1 py-3 rounded-lg items-center bg-[#FF69B4] mx-2"
-          onPress={handleSave}
-        >
-          <Text className="text-base font-semibold text-white">Save</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Success modal */}
-      <Modal transparent={true} visible={showSuccess} animationType="fade">
-        <View className="flex-1 bg-black/40 justify-center items-center">
-          <Text className="text-2xl font-bold text-white">Outfit Saved!</Text>
-          <ConfettiCannon
-            ref={confettiRef}
-            count={200}
-            origin={{ x: -10, y: 0 }}
-            autoStart={true}
-            fadeOut
-            colors={["#FF69B4", "#FFB6C1", "#FFF0F5", "#DB7093"]}
-          />
+        {/* Outfit Preview */}
+        <View className="flex-col justify-center items-center mt-4 space-y-4">
+          {imageUrls.length === 0 ? (
+            <ActivityIndicator size="small" />
+          ) : (
+            imageUrls.map((uri, i) => (
+              <Image
+                key={i}
+                source={{ uri }}
+                className="w-32 h-32 rounded-lg mx-2 mb-2 bg-[#EEE]"
+                resizeMode="cover"
+              />
+            ))
+          )}
         </View>
-      </Modal>
-    </View>
+
+        <TextInput
+          className="border border-[#FFB6C1] rounded-lg p-3 text-base bg-[#FFF0F5] text-[#333] mt-5"
+          placeholder="Name your outfit"
+          placeholderTextColor="#666"
+          onChangeText={setOutfitName}
+          value={outfitName}
+        />
+
+        {/* Buttons */}
+        <View className="absolute bottom-7 left-5 right-5 flex-row justify-between">
+          <TouchableOpacity
+            className="flex-1 py-3 rounded-lg items-center bg-[#FF69B4] mx-2 border-white border-dashed border-2"
+            onPress={handleSave}
+          >
+            <Text className="text-base font-semibold text-textGreen">Save</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Success modal */}
+        <Modal transparent={true} visible={showSuccess} animationType="fade">
+          <View className="flex-1 bg-black/40 justify-center items-center">
+            <Text className="text-2xl font-bold text-white">Outfit Saved!</Text>
+            <ConfettiCannon
+              ref={confettiRef}
+              count={200}
+              origin={{ x: -10, y: 0 }}
+              autoStart={true}
+              fadeOut
+              colors={["#FF69B4", "#FFB6C1", "#FFF0F5", "#DB7093"]}
+            />
+          </View>
+        </Modal>
+      </View>
+    </GradientBackground>
   );
 }

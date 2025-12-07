@@ -1,30 +1,18 @@
+import GradientBackground from "@/components/GradientBackground";
 import { brandColors } from "@/constants/colors";
 import { supabase } from "@/lib/supabase";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { LinearGradient } from "expo-linear-gradient";
 import * as Location from "expo-location";
 import { Link, router } from "expo-router";
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import colors from "tailwindcss/colors";
 
-
 export default function HomeScreen() {
   return (
+    <GradientBackground>
     <View className="flex-1">
-      <LinearGradient
-        colors={[brandColors.brandPink, colors.white]}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: "100%",
-        }}
-      />
       <SafeAreaView edges={["top"]} />
       <ScrollView
         className="z-10 px-10"
@@ -100,7 +88,7 @@ export default function HomeScreen() {
 
               alert(`Hey, watch out for ${weatherType} today!`);
             }}
-            className="w-full flex-row items-center bg-brandPink py-4 rounded-2xl px-4 shadow-sm shadow-black/10"
+            className="w-full flex-row items-center bg-brandPink py-4 rounded-2xl px-4 shadow-sm shadow-black/10 border-white border-dashed border-2"
           >
             <Image
               source={require("@/assets/images/anne_hathaway.png")}
@@ -109,14 +97,14 @@ export default function HomeScreen() {
             />
 
             <Text style={{ color: "#0a4030" }} className="text-lg font-medium">
-              Enable weather alert here
+              ♡ Enable weather alert here
             </Text>
           </Pressable>
 
 
           <Link href="./outfit-generation/generate" asChild>
             <Pressable
-              className="w-full bg-brandPink py-4 rounded-2xl items-center shadow-sm shadow-black/10"
+              className="w-full bg-brandPink py-4 rounded-2xl items-center shadow-sm shadow-black/10 border-white border-dashed border-2"
               onPress={() => Haptics.selectionAsync()}
             >
               <Text style={{ color: "#0a4030" }} className="text-lg font-medium">
@@ -131,13 +119,26 @@ export default function HomeScreen() {
               await supabase.auth.signOut();
               router.replace("/(auth)/logout");
             }}
-            className="w-full bg-red-500 py-3 rounded-2xl items-center shadow-sm shadow-black/10"
+            className="w-full bg-red-500 py-3 rounded-2xl items-center shadow-sm shadow-black/10 border-white border-dashed border-2"
           >
             <Text className="text-lg text-white font-medium">Logout</Text>
           </Pressable>
         </View>
+
+        {/* Bottom cherry blossom image */}
+        <View
+          pointerEvents="none"
+          className="absolute top-[-260px] left-[52px] w-full h-full transform -rotate-12"
+        >
+          <Image
+            source={require("@/assets/images/cherry blossom branch.png")}
+            resizeMode="contain"
+            className="w-full h-full opacity-30"
+          />
+        </View>
       </ScrollView>
      
     </View>
+    </GradientBackground>
   );
 }
