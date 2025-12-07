@@ -2,6 +2,7 @@ import GradientBackground from "@/components/GradientBackground";
 import { uploadClothingItem } from "@/lib/uploadClothingItem";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
+import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -14,13 +15,14 @@ import {
   View,
 } from "react-native";
 import ConfettiCannon from "react-native-confetti-cannon";
-import { useRouter } from "expo-router";
 
 export default function AddClothesScreen() {
   const [imageUris, setImageUris] = useState<string[]>([]);
   const [itemName, setItemName] = useState("");
   const [tags, setTags] = useState("");
-  const [type, setType] = useState<"top" | "bottom" | "full" | "shoes" | "">("");
+  const [type, setType] = useState<"top" | "bottom" | "full" | "shoes" | "">(
+    ""
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const confettiRef = useRef(null);
@@ -49,12 +51,20 @@ export default function AddClothesScreen() {
     setIsLoading(true);
 
     try {
-      const tagsArray = tags.split(",").map((t) => t.trim()).filter(Boolean);
+      const tagsArray = tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean);
 
       let createdItemId = null;
 
       for (const uri of imageUris) {
-        const { id } = await uploadClothingItem(uri, itemName || "Unnamed", tagsArray, type);
+        const { id } = await uploadClothingItem(
+          uri,
+          itemName || "Unnamed",
+          tagsArray,
+          type
+        );
         if (!createdItemId) createdItemId = id; // store ID of first created item
       }
 
@@ -67,7 +77,10 @@ export default function AddClothesScreen() {
       setTimeout(() => {
         setShowSuccess(false);
         if (createdItemId) {
-          router.push(`/closet/${createdItemId}`); 
+          router.navigate("/closet");
+          setTimeout(() => {
+            router.push(`/closet/${createdItemId}`);
+          }, 0);
         }
       }, 2500);
     } catch (err) {
@@ -102,7 +115,9 @@ export default function AddClothesScreen() {
           className="w-full mb-4 rounded-2xl bg-brandPink justify-center items-center p-8 shadow-sm shadow-black/10 border-white border-dashed border-2"
           onPress={pickImages}
         >
-          <Text className="text-lg font-bold text-textGreen">Tap to upload an image</Text>
+          <Text className="text-lg font-bold text-textGreen">
+            Tap to upload an image
+          </Text>
         </TouchableOpacity>
 
         {/* Item Name Input */}

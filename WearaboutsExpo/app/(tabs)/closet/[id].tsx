@@ -125,8 +125,7 @@ export default function ItemPage() {
         >
           <TouchableOpacity
             onPress={() => {
-              router.dismissAll();
-              router.navigate("/closet");
+              router.back();
             }}
             className="p-2 rounded-full mr-2 mt-2"
           >
