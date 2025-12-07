@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-serve(async (req) => {
+export const analyzeImageHandler = async (req: Request): Promise<Response> => {
   const corsHeaders = {
     "Access-Control-Allow-Origin": '*',
     "Access-Control-Allow-Headers": 'authorization, x-client-info, apikey, content-type'
@@ -75,7 +75,17 @@ serve(async (req) => {
     console.log('Fetched existing tags from Supabase:', itemData?.tags);
 
     const currentTags: string[] = itemData?.tags || [];
-    const mergedTags = Array.from(new Set([...currentTags, ...labels])); // remove duplicates
+    const allTags = [...currentTags, ...labels];
+    // Deduplicate case-insensitively while keeping the first-seen capitalization
+    const seen = new Set<string>();
+    const mergedTags: string[] = [];
+    for (const tag of allTags) {
+      const lower = tag.toLowerCase();
+      if (!seen.has(lower)) {
+        seen.add(lower);
+        mergedTags.push(tag);
+      }
+    }
 
     if (itemData) {
       await supabase.from("clothing_items")
@@ -95,4 +105,6 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-});
+};
+
+serve(analyzeImageHandler);

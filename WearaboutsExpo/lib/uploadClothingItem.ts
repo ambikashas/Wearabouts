@@ -104,8 +104,6 @@ export async function uploadClothingItem(
       .from("Clothes")
       .getPublicUrl(optimizedFileName).data.publicUrl;
 
-    console.log("Optimized image URL:", optimized_url);
-
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError) throw userError;
     if (!user) throw new Error("No logged-in user");
@@ -135,8 +133,6 @@ export async function uploadClothingItem(
 
     if (error) throw error;
 
-    console.log("Vision API response:", data);
-
     // Delete the optimized image from Supabase Storage
     const { error: deleteError } = await supabase.storage
       .from("Clothes")
@@ -144,8 +140,6 @@ export async function uploadClothingItem(
 
     if (deleteError) {
       console.warn("Failed to delete optimized image:", deleteError);
-    } else {
-      console.log("Optimized image deleted successfully");
     }
 
     return inserted;
