@@ -1,10 +1,10 @@
+import GradientBackground from "@/components/GradientBackground";
 import { brandColors } from "@/constants/colors";
 import { editItemTags } from "@/lib/editTags";
 import { removeClothingItem } from "@/lib/removeClothingItem";
 import { supabase } from "@/lib/supabase";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
-import GradientBackground from "@/components/GradientBackground";
+import { useEffect, useState } from "react";
 
 import {
   ActivityIndicator,
@@ -124,12 +124,16 @@ export default function ItemPage() {
           style={{ backgroundColor: brandColors.brandPink }}
         >
           <TouchableOpacity
-            onPress={() => router.back()}
+            onPress={() => {
+              router.back();
+            }}
             className="p-2 rounded-full mr-2 mt-2"
           >
             <ChevronLeftIcon color={brandColors.textGreen} />
           </TouchableOpacity>
-          <Text className="text-2xl font-bold text-textGreen mt-2">Item Details</Text>
+          <Text className="text-2xl font-bold text-textGreen mt-2">
+            Item Details
+          </Text>
         </View>
 
         {/* Main Content */}
@@ -151,7 +155,6 @@ export default function ItemPage() {
 
           {/* Tags with Edit Button */}
           <View className="flex flex-row items-center justify-center mb-6 gap-4 w-full px-4">
-
             <Text className="flex-shrink flex-wrap text-gray-600 text-xl">
               {Array.isArray(item?.tags)
                 ? item.tags.join(", ")
@@ -171,7 +174,9 @@ export default function ItemPage() {
             activeOpacity={0.7}
             className="px-11 py-4 rounded-xl shadow-sm bg-red-500 border-white border-dashed border-2"
           >
-            <Text className="text-white font-semibold text-xl">Delete Item</Text>
+            <Text className="text-white font-semibold text-xl">
+              Delete Item
+            </Text>
           </TouchableOpacity>
         </ScrollView>
 
