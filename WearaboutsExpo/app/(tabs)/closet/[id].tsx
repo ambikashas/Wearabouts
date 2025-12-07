@@ -98,10 +98,12 @@ export default function ItemPage() {
 
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center bg-white">
-        <ActivityIndicator size="large" color={brandColors.brandPink} />
-        <Text className="mt-2 text-gray-600">Loading item...</Text>
-      </View>
+      <GradientBackground>
+        <View className="flex-1 justify-center items-center bg-transparent">
+          <ActivityIndicator size="large" color={brandColors.brandPink} />
+          <Text className="mt-2 text-gray-600">Loading item...</Text>
+        </View>
+      </GradientBackground>
     );
   }
 
@@ -118,16 +120,16 @@ export default function ItemPage() {
       <View className="flex-1 bg-transparent">
         {/* Pink Header Bar */}
         <View
-          className="flex-row items-center p-3 pt-11"
+          className="flex-row items-center p-3 pt-11 border-b-2 border-white border-dashed"
           style={{ backgroundColor: brandColors.brandPink }}
         >
           <TouchableOpacity
             onPress={() => router.back()}
             className="p-2 rounded-full mr-2 mt-2"
           >
-            <ChevronLeftIcon color="white" />
+            <ChevronLeftIcon color={brandColors.textGreen} />
           </TouchableOpacity>
-          <Text className="text-2xl font-bold text-white mt-2">Item Details</Text>
+          <Text className="text-2xl font-bold text-textGreen mt-2">Item Details</Text>
         </View>
 
         {/* Main Content */}
@@ -167,7 +169,7 @@ export default function ItemPage() {
           <TouchableOpacity
             onPress={handleDelete}
             activeOpacity={0.7}
-            className="px-11 py-4 rounded-xl shadow-sm bg-red-500"
+            className="px-11 py-4 rounded-xl shadow-sm bg-red-500 border-white border-dashed border-2"
           >
             <Text className="text-white font-semibold text-xl">Delete Item</Text>
           </TouchableOpacity>
@@ -198,7 +200,7 @@ export default function ItemPage() {
                   className="px-4 py-2 rounded-lg"
                   style={{ backgroundColor: brandColors.brandPink }}
                 >
-                  <Text className="text-white font-semibold">Save</Text>
+                  <Text className="text-textGreen font-semibold">Save</Text>
                 </TouchableOpacity>
               </View>
             </View>

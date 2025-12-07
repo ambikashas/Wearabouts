@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { supabase } from "@/lib/supabase";
+import GradientBackground from "@/components/GradientBackground";
 
 export default function GenerateScreen() {
   const [selectedOption, setSelectedOption] = useState("");
@@ -77,20 +78,23 @@ export default function GenerateScreen() {
 
   if (isGenerating) {
     return (
-      <View className="flex-1 bg-[#FFE4E1] p-5 justify-center items-center">
+      <GradientBackground>
+      <View className="flex-1 bg-transparent p-5 justify-center items-center">
         <ActivityIndicator size="large" color="#FF69B4" />
-        <Text className="mt-2 text-base text-[#FF69B4]">
+        <Text className="mt-2 text-xl text-textGreen">
           Generating outfit...
         </Text>
       </View>
+      </GradientBackground>
     );
   }
 
   return (
-    <View className="flex-1 p-5">
-      {/* Event Selection */}
-      <View className="mt-8">
-        <Text className="text-lg font-semibold text-brandPink mb-3">
+    <GradientBackground>
+      <View className="flex-1 p-5">
+        {/* Event Selection */}
+        <View className="mt-8">
+          <Text className="text-3xl font-semibold text-textGreen mb-3">
           Select Event Type
         </Text>
 
@@ -116,15 +120,16 @@ export default function GenerateScreen() {
       {/* Buttons */}
       <View className="absolute bottom-7 left-5 right-5 flex-row justify-between">
         <TouchableOpacity
-          className={`flex-1 py-3 rounded-lg items-center mx-2 ${
+          className={`flex-1 py-3 rounded-lg items-center mx-2 border-white border-dashed border-2 ${
             selectedOption || otherText ? "bg-[#FF69B4]" : "bg-[#FFC0CB] opacity-60"
           }`}
           disabled={!selectedOption && !otherText}
           onPress={handleGenerate}
         >
-          <Text className="text-base font-bold text-white">Generate</Text>
+          <Text className="text-base font-bold text-textGreen">Generate</Text>
         </TouchableOpacity>
       </View>
     </View>
+    </GradientBackground>
   );
 }

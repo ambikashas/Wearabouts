@@ -17,9 +17,9 @@ const RadioButton = ({
         selected ? "border-[#0a7ea4]" : "border-gray-500"
       }`}
     >
-      {selected && <View className="h-3 w-3 rounded-full bg-[#0a7ea4]" />}
+      {selected && <View className="h-3 w-3 rounded-full bg-[#0c8278]" />}
     </View>
-    <Text className="text-base text-[#333]">{label}</Text>
+    <Text className="text-2xl text-textGreen">{label}</Text>
   </TouchableOpacity>
 );
 

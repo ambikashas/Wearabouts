@@ -83,7 +83,7 @@ export default function AddClothesScreen() {
       <GradientBackground>
         <View className="flex-1 justify-center items-center p-4 bg-transparent">
           <ActivityIndicator size="large" color="#FF69B4" />
-          <Text className="mt-2 text-base text-brandPink">Uploading...</Text>
+          <Text className="mt-2 text-xl text-textGreen">Uploading...</Text>
         </View>
       </GradientBackground>
     );
@@ -99,10 +99,10 @@ export default function AddClothesScreen() {
         {/* Upload Area */}
         <TouchableOpacity
           activeOpacity={0.7}
-          className="w-full mb-4 rounded-2xl bg-brandPink justify-center items-center p-8 shadow-sm shadow-black/10"
+          className="w-full mb-4 rounded-2xl bg-brandPink justify-center items-center p-8 shadow-sm shadow-black/10 border-white border-dashed border-2"
           onPress={pickImages}
         >
-          <Text className="text-base text-textGreen">Tap to upload images</Text>
+          <Text className="text-lg font-bold text-textGreen">Tap to upload images</Text>
         </TouchableOpacity>
 
         {/* Item Name Input */}
@@ -127,6 +127,7 @@ export default function AddClothesScreen() {
             testID="picker-type"
             selectedValue={type}
             onValueChange={(value) => setType(value)}
+            itemStyle={{ fontSize: 16 }}
           >
             <Picker.Item label="Select Type..." value="" />
             <Picker.Item label="Top" value="top" />
@@ -156,7 +157,7 @@ export default function AddClothesScreen() {
         <View className="items-center pt-4">
           <TouchableOpacity
             activeOpacity={0.7}
-            className={`w-[150px] py-3 rounded-lg items-center ${
+            className={`w-[150px] py-3 rounded-lg items-center border-white border-dashed border-2 ${
               imageUris.length === 0 || isLoading || !type
                 ? "bg-brandPink"
                 : "bg-[#FF69B4]"
@@ -186,6 +187,18 @@ export default function AddClothesScreen() {
             )}
           </View>
         </Modal>
+
+        {/* Bottom cherry blossom image */}
+        <View
+          pointerEvents="none"
+          className="absolute bottom-[-270px] left-[51px] w-full h-full transform -rotate-12"
+        >
+          <Image
+            source={require("@/assets/images/cherry blossom branch.png")}
+            resizeMode="contain"
+            className="w-full h-full opacity-80"
+          />
+        </View>
       </ScrollView>
     </GradientBackground>
   );
