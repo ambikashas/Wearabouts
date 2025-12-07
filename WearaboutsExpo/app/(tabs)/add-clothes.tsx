@@ -30,7 +30,7 @@ export default function AddClothesScreen() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: "images",
       allowsEditing: false,
-      allowsMultipleSelection: true,
+      allowsMultipleSelection: false,
       quality: 1,
     });
 
@@ -102,7 +102,7 @@ export default function AddClothesScreen() {
           className="w-full mb-4 rounded-2xl bg-brandPink justify-center items-center p-8 shadow-sm shadow-black/10 border-white border-dashed border-2"
           onPress={pickImages}
         >
-          <Text className="text-lg font-bold text-textGreen">Tap to upload images</Text>
+          <Text className="text-lg font-bold text-textGreen">Tap to upload an image</Text>
         </TouchableOpacity>
 
         {/* Item Name Input */}
