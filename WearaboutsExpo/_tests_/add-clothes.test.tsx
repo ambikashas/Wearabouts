@@ -162,7 +162,7 @@ jest.mock("@/lib/supabase", () => {
   };
 });
 
-// Mock fetch for analyzeImageHandler
+// Mock fetch for analyzeImageHandler (and mocking Google Vision API response)
 global.fetch = jest.fn(async () => ({
   ok: true,
   json: async () => ({
