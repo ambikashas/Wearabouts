@@ -6,6 +6,7 @@ import { RefreshControl, ScrollView, Text, TouchableOpacity, View, TextInput } f
 import { ChevronRightIcon } from "react-native-heroicons/outline";
 import { searchClothingItems } from "@/lib/searchClothingItems";
 import GradientBackground from "@/components/GradientBackground";
+import { supabase } from "@/lib/supabase";
 
 function SearchBar({
   value,
@@ -62,17 +63,27 @@ export default function ItemsCloset() {
     setRefreshing(false);
   };
 
-  const handleSearch = async () => {
-    if (!searchText.trim()) {
-      setSearchResults(null);
-      return;
-    }
+const handleSearch = async () => {
+  if (!searchText.trim()) {
+    setSearchResults(null);
+    return;
+  }
 
-    setSearching(true);
-    const results = await searchClothingItems(searchText);
-    setSearchResults(results);
+  setSearching(true);
+
+  // Get the current logged-in user
+  const { data: { user }, error } = await supabase.auth.getUser();
+  if (!user) {
+    console.error("No logged-in user");
     setSearching(false);
-  };
+    return;
+  }
+
+  const results = await searchClothingItems(searchText, user.id);
+  setSearchResults(results);
+  setSearching(false);
+};
+
 
   const handleClearSearch = () => {
     setSearchText("");
