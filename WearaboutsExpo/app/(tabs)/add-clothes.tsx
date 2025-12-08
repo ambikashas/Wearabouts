@@ -130,7 +130,7 @@ export default function AddClothesScreen() {
 
         {/* Tags Input */}
         <TextInput
-          placeholder="Tags (comma-separated)"
+          placeholder="Optional tags (comma-separated; e.g., blue, cool)"
           value={tags}
           onChangeText={setTags}
           className="border border-gray-300 rounded-lg p-3 mb-4 text-base bg-white"
