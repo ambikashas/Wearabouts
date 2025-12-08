@@ -39,18 +39,21 @@ npm install
 ```bash
 npm install -g expo-cli
 ```
-## 4. Create your environment file:
+## 4. Create your environment file (if not already in the repository):
 
 ```bash
 cp .env.example .env
 ```
+
 ## Fill in the following variables:
 
+```
 SUPABASE_URL
-
 SUPABASE_ANON_KEY
-
 GOOGLE_VISION_API_KEY
+```
+
+Contact the developers of this repository for more information.
 
 ## 5. Start the Expo development server:
 
@@ -80,10 +83,11 @@ Each tab contains screens relevant to its functionality.
 ### Add Clothes
 To add new items to your closet:
 
-1. Open **My Closet** or use the **Add Clothes** button.
-2. Select photos of your clothing items from your device’s gallery.
-3. You can select **one or multiple items** at a time.
-4. Uploaded clothes will appear in **My Closet**.
+1. Use the **Add Clothes** button.
+2. Select photos of your clothing item from your device’s gallery.
+3. You can select **one item** at a time.
+4. A screen will show the item, name, and generated tags. Hit **Save** to finish the upload.
+5. Uploaded clothes will appear in **My Closet**.
 
 ---
 
@@ -105,10 +109,9 @@ To add new items to your closet:
 ### Saved Outfits
 To view your previously saved outfits:
 
-1. Open **My Closet**.
-2. Click the **caret icon** at the top of the screen to switch to the **Saved Outfits** view.
-3. Browse your saved outfits.
-4. You can **edit** or **delete** any saved outfit as needed.
+1. Open **My Outvits**.
+2. Browse your saved outfits.
+3. You can **delete** any saved outfit as needed.
    
 ## Known Bugs and Limitations
 Occasionally, AI image recognition may incorrectly tag clothing items (e.g., detecting a sleeve in a picture of a skirt).
