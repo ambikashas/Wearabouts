@@ -80,6 +80,13 @@ npm install -g expo-cli
 
 ### Installation Steps
 
+Clone the repository and navigate to the app directory:
+
+```bash
+git clone https://github.com/ambikashas/Wearabouts.git
+cd Wearabouts/WearaboutsExpo
+```
+
 Navigate into the Expo app:
 
 ```bash
@@ -92,7 +99,7 @@ Install dependencies:
 npm install
 ```
 
-Create your environment file:
+Create your environment file (if not already included in the repository):
 
 ```bash
 cp .env.example .env
@@ -103,6 +110,8 @@ Fill in:
 * `SUPABASE_URL`
 * `SUPABASE_ANON_KEY`
 * `GOOGLE_VISION_API_KEY`
+
+Contact the developers for more information.
 
 Start the Expo development server:
 
