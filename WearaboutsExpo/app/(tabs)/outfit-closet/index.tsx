@@ -74,6 +74,15 @@ export default function SavedOutfitsScreen() {
             ) : null
           }
           contentContainerStyle={{ paddingHorizontal: 8, paddingBottom: 16 }}
+          ListEmptyComponent={
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingVertical: 200 }}>
+              <Text style={{ fontSize: 20, color: "gray", textAlign: "center" }}>
+                No outfits yet! {"\n"}
+                
+                Pull down to refresh.
+              </Text>
+            </View>
+          }
         />
       </View>
     </GradientBackground>
