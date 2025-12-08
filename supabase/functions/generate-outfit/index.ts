@@ -6,13 +6,14 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-serve(async (req) => {
-    console.log('Function invoked')
+// Export the handler function for testing
+export async function generateOutfitHandler(req: Request) {
+  console.log('Function invoked')
 
-    // Handle CORS preflight
-    if (req.method === 'OPTIONS') {
-        return new Response('ok', { headers: corsHeaders })
-    }
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
 
   try {
     console.log('Parsing request body...')
@@ -219,4 +220,7 @@ Important:
       }
     )
   }
-})
+}
+
+// Serve the handler for Supabase Edge Functions
+serve(generateOutfitHandler)
