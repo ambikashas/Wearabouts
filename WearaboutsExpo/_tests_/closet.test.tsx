@@ -24,6 +24,25 @@ jest.mock('@/lib/searchClothingItems', () => ({
   searchClothingItems: jest.fn(async () => []),
 }));
 
+// --- Mock Supabase ---
+jest.mock('@/lib/supabase', () => ({
+  supabase: {
+    auth: {
+      getUser: jest.fn(async () => ({ data: { user: { id: '123' } }, error: null })),
+      signOut: jest.fn(),
+    },
+    from: jest.fn(() => ({
+      select: jest.fn().mockReturnThis(),
+      eq: jest.fn().mockReturnThis(),
+      maybeSingle: jest.fn(async () => ({ data: {}, error: null })),
+    })),
+    functions: {
+      invoke: jest.fn(),
+    },
+  },
+}));
+
+
 jest.mock("@/components/ImageListHorizontalScrollDisplay", () => {
   return ({ data }: any) => {
     const { View, Text } = require("react-native");

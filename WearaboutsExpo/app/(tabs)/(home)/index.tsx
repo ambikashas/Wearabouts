@@ -1,16 +1,17 @@
+import GradientBackground from "@/components/GradientBackground";
 import { brandColors } from "@/constants/colors";
+import { supabase } from "@/lib/supabase";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { LinearGradient } from "expo-linear-gradient";
-import { Link } from "expo-router";
+import * as Location from "expo-location";
+import { Link, router } from "expo-router";
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import colors from "tailwindcss/colors";
-import { router } from "expo-router";
-import { supabase } from "@/lib/supabase";
 
 export default function HomeScreen() {
   return (
+    <GradientBackground>
     <View className="flex-1">
       <SafeAreaView edges={["top"]} />
       <ScrollView
@@ -24,12 +25,12 @@ export default function HomeScreen() {
         <View className="w-full rounded-2xl overflow-hidden self-center shadow-md shadow-black/10">
           <Image
             source={require("@/assets/images/dashboard-bg.jpg")}
-            className="w-full h-[460px] rounded-2xl opacity-70"
+            className="w-full h-[440px] rounded-2xl opacity-70"
           />
 
           {/* Overlay */}
           <View className="absolute inset-0 p-5 justify-between">
-            <Text className="text-[46px] text-[#35403A] font-semibold font-[Georgia] mt-2">
+            <Text className="text-[38px] text-[#35403A] font-semibold font-[Georgia] mt-2">
               Welcome stylist!
             </Text>
 
@@ -52,7 +53,7 @@ export default function HomeScreen() {
             />
             <Image
               source={require("@/assets/images/blue-dress.png")}
-              className="absolute top-[50%] left-[10%] w-[230px] h-[230px] z-10 rotate-[-11deg] -translate-x-[75px] -translate-y-[75px]"
+              className="absolute top-[45%] left-[10%] w-[230px] h-[230px] z-10 rotate-[-11deg] -translate-x-[75px] -translate-y-[75px]"
               resizeMode="contain"
             />
           </View>
@@ -60,23 +61,53 @@ export default function HomeScreen() {
 
         {/* Buttons */}
         <View className="items-center gap-5">
-          <Link href="/closet" asChild>
-            <Pressable
-              className="w-full bg-brandPink py-4 rounded-2xl items-center shadow-sm shadow-black/10"
-              onPress={() => Haptics.selectionAsync()}
-            >
-              <Text className="text-lg text-white font-medium">
-                ♡ My Closet
-              </Text>
-            </Pressable>
-          </Link>
+          <Pressable
+            onPress={async () => {
+              await Haptics.selectionAsync();
+
+              // Request location permission
+              const { status } = await Location.requestForegroundPermissionsAsync();
+              if (status !== "granted") {
+                alert("Permission denied. Unable to show weather alerts.");
+                return;
+              }
+
+              // Get user location
+              const loc = await Location.getCurrentPositionAsync({});
+              const lat = loc.coords.latitude;
+              const lon = loc.coords.longitude;
+
+              // Fetch weather
+              const WEATHER_KEY = process.env.EXPO_PUBLIC_WEATHER_API_KEY;
+
+              const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_KEY}`;
+
+              const response = await fetch(url);
+              const weather = await response.json();
+              const weatherType = weather.weather?.[0]?.main ?? "the weather";
+
+              alert(`Hey, watch out for ${weatherType} today!`);
+            }}
+            className="w-full flex-row items-center bg-brandPink py-4 rounded-2xl px-4 shadow-sm shadow-black/10 border-white border-dashed border-2"
+          >
+            <Image
+              source={require("@/assets/images/anne_hathaway.png")}
+              className="w-12 h-12 rounded-full mr-3"
+              resizeMode="cover"
+            />
+
+            <Text style={{ color: "#0a4030" }} className="text-lg font-medium">
+              ♡ Enable weather alert here
+            </Text>
+          </Pressable>
+
 
           <Link href="./outfit-generation/generate" asChild>
             <Pressable
-              className="w-full bg-brandPink py-4 rounded-2xl items-center shadow-sm shadow-black/10"
+              className="w-full bg-brandPink py-4 rounded-2xl items-center shadow-sm shadow-black/10 border-white border-dashed border-2"
               onPress={() => Haptics.selectionAsync()}
             >
-              <Text className="text-lg text-white font-medium">
+              <Text style={{ color: "#0a4030" }} className="text-lg font-medium">
                 ♡ Create outfit
               </Text>
             </Pressable>
@@ -88,24 +119,26 @@ export default function HomeScreen() {
               await supabase.auth.signOut();
               router.replace("/(auth)/logout");
             }}
-            className="w-full bg-red-500 py-3 rounded-2xl items-center"
+            className="w-full bg-red-500 py-3 rounded-2xl items-center shadow-sm shadow-black/10 border-white border-dashed border-2"
           >
             <Text className="text-lg text-white font-medium">Logout</Text>
           </Pressable>
         </View>
+
+        {/* Bottom cherry blossom image */}
+        <View
+          pointerEvents="none"
+          className="absolute top-[-260px] left-[52px] w-full h-full transform -rotate-12"
+        >
+          <Image
+            source={require("@/assets/images/cherry blossom branch.png")}
+            resizeMode="contain"
+            className="w-full h-full opacity-30"
+          />
+        </View>
       </ScrollView>
-      <LinearGradient
-        colors={[brandColors.brandPink, colors.white]}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: "100%",
-        }}
-      />
+     
     </View>
+    </GradientBackground>
   );
 }

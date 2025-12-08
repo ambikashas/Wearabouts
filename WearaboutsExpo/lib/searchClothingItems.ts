@@ -1,15 +1,17 @@
 import { supabase } from "./supabase";
 
-export async function searchClothingItems(searchText: string) {
+export async function searchClothingItems(searchText: string, userId: string) {
   const words = searchText.trim().split(/\s+/);
   if (words.length === 0) return [];
 
   // Build OR conditions for name
   const nameConditions = words.map((word) => `name.ilike.%${word}%`).join(",");
 
+  // Only fetch items belonging to the user
   const { data: nameMatches, error: nameError } = await supabase
     .from("clothing_items")
     .select("*")
+    .eq("user_id", userId)          // <-- filter by user
     .or(nameConditions);
 
   if (nameError) {
@@ -17,10 +19,11 @@ export async function searchClothingItems(searchText: string) {
     return [];
   }
 
-  // Filter tags manually on client side
+  // Fetch all items for this user for tag filtering
   const { data: allItems, error: allError } = await supabase
     .from("clothing_items")
-    .select("*");
+    .select("*")
+    .eq("user_id", userId);          // <-- filter by user
 
   if (allError) {
     console.error("Search error (all items for tags):", allError);

@@ -111,13 +111,17 @@ export async function uploadClothingItem(
     if (!user) throw new Error("No logged-in user");
 
     // Insert metadata into "clothing_items"
-    const { error: dbError } = await supabase.from("clothing_items").insert({
-      name,
-      tags,
-      type,
-      image_url, 
-      user_id: user.id,
-    });
+    const { data: inserted, error: dbError } = await supabase
+      .from("clothing_items")
+      .insert({
+        name,
+        tags,
+        type,
+        image_url,
+        user_id: user.id,
+      })
+      .select()
+      .single();
 
     if (dbError) throw dbError;
 
@@ -144,7 +148,7 @@ export async function uploadClothingItem(
       console.log("Optimized image deleted successfully");
     }
 
-    return { image_url, fileName };
+    return inserted;
   } catch (err) {
     console.error("uploadClothingItem error", err);
     throw err;

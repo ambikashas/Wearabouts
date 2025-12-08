@@ -1,21 +1,38 @@
 import { brandColors } from "@/constants/colors";
 import { Stack } from "expo-router";
-import colors from "tailwindcss/colors";
 
 export default function GenerationLayout() {
   return (
     <Stack
       screenOptions={{
         headerStyle: { backgroundColor: brandColors.brandPink },
-        headerTintColor: colors.white,
-        headerTitleAlign: "center",
-        title: "Generate an outfit",
+        headerTintColor: brandColors.textGreen,
         headerBackButtonDisplayMode: "minimal",
       }}
     >
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="outfit-generation/generate" />
-      <Stack.Screen name="outfit-generation/generated-outfit" />
+      {/* Dashboard / entry screen */}
+      <Stack.Screen
+        name="index"
+        options={{ headerShown: false }}
+      />
+
+      {/* Generate Outfit screen */}
+      <Stack.Screen
+        name="outfit-generation/generate"
+        options={{
+          title: "Generate an outfit",
+          headerTitleAlign: "center",
+        }}
+      />
+
+      {/* Generated outfit screen */}
+      <Stack.Screen
+        name="outfit-generation/generated-outfit"
+        options={{
+          title: "Your outfit",
+          headerTitleAlign: "center",
+        }}
+      />
     </Stack>
   );
 }
