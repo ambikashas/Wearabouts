@@ -1,15 +1,15 @@
-import { Slot, Redirect } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { ActivityIndicator, View, Text } from "react-native";
-import "../global.css";
 import { AuthProvider, useAuth } from "@/providers/AuthProvider";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { ActivityIndicator, Text, View } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import "../global.css";
 
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <AuthProvider>
-        <Slot />
+        <RootAuthGate />
       </AuthProvider>
       <StatusBar style="auto" />
     </SafeAreaProvider>
@@ -28,9 +28,18 @@ function RootAuthGate() {
     );
   }
 
-  if (!user) {
-    return <Redirect href="/(auth)/login" />;
-  }
-
-  return <Slot />;
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Protected guard={!!user}>
+        <Stack.Screen name="(tabs)" />
+      </Stack.Protected>
+      <Stack.Protected guard={!user}>
+        <Stack.Screen name="(auth)" options={{ gestureEnabled: false }} />
+      </Stack.Protected>
+    </Stack>
+  );
 }
